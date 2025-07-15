@@ -137,7 +137,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@utility main-container {
+  @apply !flex flex-col items-center;
 }
