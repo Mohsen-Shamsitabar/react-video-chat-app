@@ -1,5 +1,5 @@
 import Header from "@/components/common/header.tsx";
-import { Homepage, NotFoundPage } from "@/views/index.ts";
+import { LoginPage, NotFoundPage } from "@/views/index.ts";
 import "normalize.css";
 import { Route, Routes } from "react-router";
 
@@ -11,7 +11,7 @@ const App = () => {
       <Routes>
         <Route
           index
-          element={<Homepage />}
+          element={<LoginPage />}
         />
 
         {/* Other Routes... */}
