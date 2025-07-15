@@ -1,0 +1,92 @@
+.DS_Store
+/node_modules/
+TODO.md
+
+# React Router
+/.react-router/
+/build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+## Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/*
+!.idea/jsonSchemas.xml
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+## temp folders
+/.tmp/
+
+# Build output
+_site
+dist
+dist-ssr
+out-tsc
+*.local
+
+# Vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Web components metadata
+packages/web-components/metadata.json
+packages/web-components/custom-elements.json
+
+# wireit
+.wireit
