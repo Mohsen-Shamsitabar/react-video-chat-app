@@ -146,3 +146,7 @@
 @utility main-container {
   @apply !flex flex-col items-center;
 }
+
+@utility container {
+  @apply px-6;
+}

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button.tsx";
-import { ROUTES } from "@/lib/constants.ts";
+import { Button } from "@client/components/ui/button.tsx";
+import { ROUTES } from "@client/lib/constants.ts";
 import { useNavigate } from "react-router";
 
 const NotFoundPage = () => {
@@ -21,12 +21,7 @@ const NotFoundPage = () => {
           changed or is temporairly unavailable.
         </p>
 
-        <Button
-          className="cursor-pointer"
-          onClick={handleBtnclick}
-        >
-          GO TO HOMEPAGE
-        </Button>
+        <Button onClick={handleBtnclick}>GO TO HOMEPAGE</Button>
       </div>
     </main>
   );
