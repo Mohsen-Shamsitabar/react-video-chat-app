@@ -1,12 +1,12 @@
 import { Button } from "@client/components/ui/button.tsx";
-import { ROUTES } from "@client/lib/constants.ts";
+import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useNavigate } from "react-router";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
   const handleBtnclick = () => {
-    void navigate(ROUTES.HOMEPAGE);
+    void navigate(PAGE_ROUTES.HOMEPAGE);
   };
 
   return (

@@ -1,8 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { LoginFormSchema } from "@shared/login-form-schema.ts";
 
-type LoggedUserState = {
-  username: string;
-};
+type LoggedUserState = LoginFormSchema;
 
 const initialState: LoggedUserState = {
   username: "",
