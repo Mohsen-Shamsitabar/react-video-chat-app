@@ -34,7 +34,9 @@ export const ERROR_MESSAGES = {
         return "Field is invalid!";
     }
   },
-  tooShort: (min: number) => `Please enter at least ${min} characters!`,
-  tooLong: (max: number) => `Please enter no more than ${max} characters!`,
-  taken: "This value is already in use.",
+  tooShort: (min: number) =>
+    `Please enter at least ${min} characters!` as const,
+  tooLong: (max: number) =>
+    `Please enter no more than ${max} characters!` as const,
+  taken: (valueName: string) => `This ${valueName} is already in use!` as const,
 } as const;
