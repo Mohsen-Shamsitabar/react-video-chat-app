@@ -18,6 +18,10 @@ export const API_ROUTES = {
   LOGIN: "/users/login",
 } as const;
 
+export const SOCKET_CHANNELS = {
+  LOGIN: "LOGIN",
+} as const;
+
 //=== == UTILS == ===//
 
 export const ERROR_MESSAGES = {
