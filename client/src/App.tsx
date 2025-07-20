@@ -1,17 +1,19 @@
-import Header from "@/components/common/header.tsx";
-import { Homepage, NotFoundPage } from "@/views/index.ts";
+import { Header } from "@client/components/common/index.ts";
 import "normalize.css";
+import { Provider as ReduxProvider } from "react-redux";
 import { Route, Routes } from "react-router";
+import reduxStore from "./redux/store.ts";
+import { LoginPage, NotFoundPage } from "./views/index.ts";
 
 const App = () => {
   return (
-    <>
+    <ReduxProvider store={reduxStore}>
       <Header />
 
       <Routes>
         <Route
           index
-          element={<Homepage />}
+          element={<LoginPage />}
         />
 
         {/* Other Routes... */}
@@ -21,7 +23,7 @@ const App = () => {
           element={<NotFoundPage />}
         />
       </Routes>
-    </>
+    </ReduxProvider>
   );
 };
 

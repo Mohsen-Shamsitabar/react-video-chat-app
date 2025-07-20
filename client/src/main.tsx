@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/providers/theme-provider.tsx";
+import { ThemeProvider } from "@client/providers/theme-provider.tsx";
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";

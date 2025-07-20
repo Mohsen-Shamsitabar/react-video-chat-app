@@ -1,16 +1,16 @@
-import { Button } from "@/components/ui/button.tsx";
-import { ROUTES } from "@/lib/constants.ts";
+import { Button } from "@client/components/ui/button.tsx";
+import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useNavigate } from "react-router";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
   const handleBtnclick = () => {
-    void navigate(ROUTES.HOMEPAGE);
+    void navigate(PAGE_ROUTES.HOMEPAGE);
   };
 
   return (
-    <main className="!flex justify-center items-center">
+    <main className="main-container">
       <div className="container flex flex-col justify-center items-center">
         <h1 className="font-bold !text-8xl">Oops!</h1>
 
@@ -21,12 +21,7 @@ const NotFoundPage = () => {
           changed or is temporairly unavailable.
         </p>
 
-        <Button
-          className="cursor-pointer"
-          onClick={handleBtnclick}
-        >
-          GO TO HOMEPAGE
-        </Button>
+        <Button onClick={handleBtnclick}>GO TO HOMEPAGE</Button>
       </div>
     </main>
   );

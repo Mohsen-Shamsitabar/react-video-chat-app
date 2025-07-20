@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button.tsx";
+import { Button } from "@client/components/ui/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
-import { cn } from "@/lib/utils.ts";
-import { useTheme } from "@/providers/theme-provider.tsx";
+} from "@client/components/ui/dropdown-menu.tsx";
+import { cn } from "@client/lib/utils.ts";
+import { useTheme } from "@client/providers/theme-provider.tsx";
 import { Moon, Sun } from "lucide-react";
 
 type Props = {
@@ -25,7 +25,6 @@ const ThemeToggler = (props: Props) => {
           <Button
             variant="outline"
             size="icon"
-            className="cursor-pointer"
           >
             <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
             <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
