@@ -1,4 +1,4 @@
 export const PAGE_ROUTES = {
   HOMEPAGE: "/",
-  CHATROOM: "/chatrooms",
+  CHATROOMS: "/chatrooms",
 } as const;

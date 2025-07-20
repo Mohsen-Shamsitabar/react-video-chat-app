@@ -3,11 +3,11 @@ import {
   configureStore,
   type ThunkAction,
 } from "@reduxjs/toolkit";
-import { loggedUserReducer } from "./slices/logged-user-slice.ts";
+import { userReducer } from "./slices/user-slice.ts";
 
 const appStore = configureStore({
   reducer: {
-    loggedUser: loggedUserReducer,
+    user: userReducer,
   },
 });
 

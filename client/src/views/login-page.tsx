@@ -6,7 +6,7 @@ import { Button } from "@client/components/ui/button.tsx";
 import { Form } from "@client/components/ui/form.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useAppDispatch } from "@client/redux/hooks.ts";
-import { loggedUserAction } from "@client/redux/slices/logged-user-slice.ts";
+import { userAction } from "@client/redux/slices/user-slice.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   loginFormSchema,
@@ -25,7 +25,7 @@ const LoginPage = () => {
   });
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const { formState, setError, clearErrors } = form;
   const { errors } = formState;
@@ -44,8 +44,8 @@ const LoginPage = () => {
     }
 
     clearErrors();
-    dispatch(loggedUserAction.setUsername(formData.username));
-    void navigate(PAGE_ROUTES.CHATROOM);
+    appDispatch(userAction.setUsername(formData.username));
+    void navigate(PAGE_ROUTES.CHATROOMS);
   };
 
   return (
