@@ -10,15 +10,16 @@ import { Input } from "@client/components/ui/input.tsx";
 import { useFormContext, type FieldValues, type Path } from "react-hook-form";
 
 type Props<T extends FieldValues> = {
-  className?: string;
   label: string;
   name: Path<T>;
+  disabled?: boolean;
+  className?: string;
   placeholder?: string;
   description?: string;
 };
 
 const StringFormControl = <T extends FieldValues>(props: Props<T>) => {
-  const { label, name, placeholder, description, className } = props;
+  const { label, name, placeholder, description, className, disabled } = props;
 
   const { control } = useFormContext<T, unknown, T>();
 
@@ -39,6 +40,7 @@ const StringFormControl = <T extends FieldValues>(props: Props<T>) => {
           <FormControl>
             <Input
               placeholder={placeholder}
+              disabled={disabled}
               {...field}
             />
           </FormControl>

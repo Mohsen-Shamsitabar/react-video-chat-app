@@ -1,8 +1,8 @@
 import { useAppSelector } from "@client/redux/hooks.ts";
-import { type LoginFormSchema } from "@shared/login-form-schema.ts";
+import { type UserState } from "@client/redux/slices/user-slice.ts";
 
 type UserLoggedStats = {
-  user: LoginFormSchema;
+  user: UserState;
   isLogged: true;
 };
 
@@ -13,7 +13,7 @@ type UserNotLoggedStats = {
 
 type UserStats = UserLoggedStats | UserNotLoggedStats;
 
-export const useUserStats = (): UserStats => {
+export const useLoginStatus = (): UserStats => {
   const user = useAppSelector(state => state.user);
 
   const { username } = user;
@@ -28,3 +28,5 @@ export const useUserStats = (): UserStats => {
 
   return { isLogged: true, user };
 };
+
+//========================================================//

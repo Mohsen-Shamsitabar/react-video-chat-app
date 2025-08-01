@@ -26,6 +26,9 @@
 
   /* == == == == == == */
 
+  --header-height: 2rem;
+  --main-height: calc(100dvh - var(--header-height));
+
   --radius: 0.625rem;
 
   --background: oklch(1 0 0);
@@ -34,6 +37,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
+  /* --primary: #dfd8fd;
+  --primary-foreground: #6e5dc6;
+  --secondary: #f8e6a0;
+  --secondary-foreground: #946f00; */
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -106,6 +113,10 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
+  /* --primary: #352c63;
+  --primary-foreground: #9f8fef;
+  --secondary: #533f04;
+  --secondary-foreground: #e2b203; */
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
@@ -144,9 +155,5 @@
 }
 
 @utility main-container {
-  @apply !flex flex-col items-center;
-}
-
-@utility container {
-  @apply px-6;
+  @apply px-12;
 }

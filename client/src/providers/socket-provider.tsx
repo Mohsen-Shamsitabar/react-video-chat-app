@@ -6,17 +6,17 @@ type SocketProviderProps = {
   socket: Socket | null;
 };
 
-type ThemeProviderState = {
+type SocketProviderState = {
   socket: SocketProviderProps["socket"];
   setSocket: (socket: SocketProviderProps["socket"]) => void;
 };
 
-const initialState: ThemeProviderState = {
+const initialState: SocketProviderState = {
   socket: null,
   setSocket: () => null,
 };
 
-const SocketProviderContext = createContext<ThemeProviderState>(initialState);
+const SocketProviderContext = createContext<SocketProviderState>(initialState);
 
 const SocketProvider = ({ children, ...props }: SocketProviderProps) => {
   const [socket, setSocket] = useState<SocketProviderProps["socket"]>(null);
@@ -34,8 +34,9 @@ const SocketProvider = ({ children, ...props }: SocketProviderProps) => {
 const useSocket = () => {
   const context = useContext(SocketProviderContext);
 
-  if (context === undefined)
+  if (!context) {
     throw new Error("useSocket must be used within a SocketProvider");
+  }
 
   return context;
 };

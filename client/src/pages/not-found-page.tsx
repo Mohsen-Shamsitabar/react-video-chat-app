@@ -10,8 +10,8 @@ const NotFoundPage = () => {
   };
 
   return (
-    <main className="main-container">
-      <div className="container flex flex-col justify-center items-center">
+    <main className="!flex flex-col items-center">
+      <div className="main-container flex flex-col justify-center items-center">
         <h1 className="font-bold !text-8xl">Oops!</h1>
 
         <p className="font-semibold">404 - PAGE NOT FOUND</p>

@@ -1,10 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { LoginFormSchema } from "@shared/login-form-schema.ts";
+import type { UserData } from "@shared/types.ts";
 
-type UserState = LoginFormSchema;
-
+type UserState = UserData;
 const initialState: UserState = {
   username: "",
+  status: "",
 };
 
 const userSlice = createSlice({
@@ -14,6 +14,10 @@ const userSlice = createSlice({
     setUsername: (state, action: PayloadAction<UserState["username"]>) => ({
       ...state,
       username: action.payload,
+    }),
+    setStatus: (state, action: PayloadAction<UserState["status"]>) => ({
+      ...state,
+      status: action.payload,
     }),
   },
 });
