@@ -64,4 +64,16 @@ export class BiDirectionalMap<T, K> {
     this.keyMap.set(key, value);
     this.valueMap.set(value, key);
   }
+
+  //==== KEYS
+
+  public keys() {
+    return this.keyMap.keys();
+  }
+
+  //==== VALUES
+
+  public values() {
+    return this.keyMap.values();
+  }
 }

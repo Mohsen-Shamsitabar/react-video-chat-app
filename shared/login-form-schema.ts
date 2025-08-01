@@ -1,11 +1,11 @@
-import { ERROR_MESSAGES } from "@shared/constants.ts";
+import { ERROR_MESSAGES, textRegex } from "@shared/constants.ts";
 import { z } from "zod";
 
 const loginFormSettings = {
   min: 4,
   max: 16,
   inputType: "text",
-  regex: /^[a-zA-Z0-9_]*$/,
+  regex: textRegex,
 } as const;
 
 const loginFormSchema = z.object({
