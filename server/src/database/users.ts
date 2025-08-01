@@ -1,15 +1,12 @@
-import { type LoginFormSchema } from "@shared/login-form-schema.ts";
+import { type UserData } from "@shared/types.ts";
 import { BiDirectionalMap } from "@shared/utils.ts";
 import { type Socket } from "socket.io";
 
-const connectedUsersMap = new BiDirectionalMap<
-  LoginFormSchema["username"],
-  Socket
->();
+const connectedUsersMap = new BiDirectionalMap<UserData, Socket>();
 
 /**
  * Lowercase of all the connected users, to check name duplicates.
  */
-const connectedUsersSet = new Set<LoginFormSchema["username"]>();
+const connectedUsersSet = new Set<UserData["username"]>();
 
 export { connectedUsersMap, connectedUsersSet };
