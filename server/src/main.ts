@@ -1,5 +1,5 @@
 import { NETWORK, SOCKET_CHANNELS } from "@shared/constants.ts";
-import { type LoginFormSchema } from "@shared/login-form-schema.ts";
+import { type UserData } from "@shared/types.ts";
 import cors from "cors";
 import express from "express";
 import http from "http";
@@ -31,25 +31,52 @@ const ioServer = new IoServer(httpServer, {
 ioServer.on("connection", socket => {
   console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id));
 
-  socket.on(SOCKET_CHANNELS.LOGIN, (username: LoginFormSchema["username"]) => {
-    connectedUsersMap.set(username, socket);
+  socket.on(SOCKET_CHANNELS.LOGIN, (userData: UserData) => {
+    connectedUsersMap.set(userData, socket);
+
+    const { username } = userData;
 
     const loweredUsername = username.toLowerCase();
 
     connectedUsersSet.add(loweredUsername);
+
+    socket.emit(
+      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      Array.from(connectedUsersMap.keys()),
+    );
+
+    socket.broadcast.emit(
+      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      Array.from(connectedUsersMap.keys()),
+    );
   });
 
   socket.on("disconnect", reason => {
+    const user = connectedUsersMap.getByValue(socket);
+
+    if (!user) return;
+
     console.log(LOG_MESSAGES.SOCKET_DISCONNECT(socket.id, reason));
 
-    const username = connectedUsersMap.getByValue(socket);
-
-    if (!username) return;
+    const { username } = user;
 
     const loweredUsername = username.toLowerCase();
 
     connectedUsersSet.delete(loweredUsername);
-    connectedUsersMap.deleteByKey(username);
+    connectedUsersMap.deleteByValue(socket);
+
+    /*used both "emit" and "broadcast.emit" to make sure everyone (current user included)
+    has recieved the message.*/
+
+    socket.emit(
+      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      Array.from(connectedUsersMap.keys()),
+    );
+
+    socket.broadcast.emit(
+      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      Array.from(connectedUsersMap.keys()),
+    );
   });
 });
 
