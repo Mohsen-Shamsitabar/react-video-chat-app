@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "http-status-codes": "^2.3.0",
+    "nanoid": "^5.1.5",
+    "zod": "^4.0.5",
+    "@reduxjs/toolkit": "^2.8.2",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",

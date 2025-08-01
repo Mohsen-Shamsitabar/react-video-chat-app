@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.base.json",
-  // "references": [{ "path": "../shared" }]
+  // "references": [{ "path": "../shared" }],
   "exclude": ["node_modules", "dist"]
   // "compilerOptions": {
   //   "baseUrl": ".",
