@@ -1,12 +1,11 @@
 import * as React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider as ReduxProvider } from "react-redux";
 import { BrowserRouter } from "react-router";
 import App from "./App.tsx";
 import "./index.css";
+import { ActiveUserProvider } from "./providers/active-user-provider.tsx";
 import { SocketProvider } from "./providers/socket-provider.tsx";
 import { ThemeProvider } from "./providers/theme-provider.tsx";
-import reduxStore from "./redux/store.ts";
 
 const rootElement = document.getElementById("root");
 
@@ -18,11 +17,11 @@ reactRoot.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <ReduxProvider store={reduxStore}>
+        <ActiveUserProvider username={null}>
           <SocketProvider socket={null}>
             <App />
           </SocketProvider>
-        </ReduxProvider>
+        </ActiveUserProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,

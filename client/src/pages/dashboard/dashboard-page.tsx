@@ -13,7 +13,7 @@ import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { MAIN_HEIGHT } from "@client/lib/css-constants.ts";
 import { useLoginStatus } from "@client/lib/hooks.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { NETWORK, SOCKET_CHANNELS } from "@shared/constants.ts";
+import { NETWORK, SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { io } from "socket.io-client";
@@ -24,7 +24,7 @@ const DashboardPage = () => {
   // what happens when we get redirected to this page again?
   // will this WHOLE block get executed ?
 
-  const { isLogged, user } = useLoginStatus();
+  const { isLogged, username } = useLoginStatus();
 
   const { socket: currentSocket, setSocket } = useSocket();
 
@@ -45,7 +45,7 @@ const DashboardPage = () => {
     socket.on("connect", () => {
       console.log(`SOCKET:${socket.id} connected!`);
 
-      socket.emit(SOCKET_CHANNELS.LOGIN, user);
+      socket.emit(SOCKET_CHANNEL_NAMES.LOGIN, username);
 
       setSocket(socket);
     });

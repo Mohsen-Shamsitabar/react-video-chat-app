@@ -1,27 +1,29 @@
 import { ERROR_MESSAGES, textRegex } from "@shared/constants.ts";
 import { z } from "zod";
 
-const loginFormSettings = {
+const usernameFieldSettings = {
   min: 4,
   max: 16,
   inputType: "text",
   regex: textRegex,
 } as const;
 
+const loginFormUsernameField = z
+  .string()
+  .min(usernameFieldSettings.min, {
+    error: ERROR_MESSAGES.tooShort(usernameFieldSettings.min),
+  })
+  .max(usernameFieldSettings.max, {
+    error: ERROR_MESSAGES.tooLong(usernameFieldSettings.max),
+  })
+  .regex(usernameFieldSettings.regex, {
+    error: ERROR_MESSAGES.invalid(usernameFieldSettings.inputType),
+  });
+
 const loginFormSchema = z.object({
-  username: z
-    .string()
-    .min(loginFormSettings.min, {
-      error: ERROR_MESSAGES.tooShort(loginFormSettings.min),
-    })
-    .max(loginFormSettings.max, {
-      error: ERROR_MESSAGES.tooLong(loginFormSettings.max),
-    })
-    .regex(loginFormSettings.regex, {
-      error: ERROR_MESSAGES.invalid(loginFormSettings.inputType),
-    }),
+  username: loginFormUsernameField,
 });
 
 type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
-export { loginFormSchema, type LoginFormSchema };
+export { loginFormSchema, loginFormUsernameField, type LoginFormSchema };

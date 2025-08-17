@@ -1,32 +1,29 @@
-import { useAppSelector } from "@client/redux/hooks.ts";
-import { type UserState } from "@client/redux/slices/user-slice.ts";
+import { useActiveUser } from "@client/providers/active-user-provider.tsx";
+import { loginFormUsernameField } from "@shared/login-form-schema.ts";
+import { type UserData } from "@shared/types.ts";
 
 type UserLoggedStats = {
-  user: UserState;
+  username: UserData["username"];
   isLogged: true;
 };
 
 type UserNotLoggedStats = {
-  user: null;
+  username: null;
   isLogged: false;
 };
 
 type UserStats = UserLoggedStats | UserNotLoggedStats;
 
 export const useLoginStatus = (): UserStats => {
-  const user = useAppSelector(state => state.user);
+  const { username } = useActiveUser();
 
-  const { username } = user;
+  if (!username) return { isLogged: false, username: null };
 
-  if (typeof username !== "string") {
-    return { isLogged: false, user: null };
-  }
+  const { success } = loginFormUsernameField.safeParse(username);
 
-  if (username.length <= 0) {
-    return { isLogged: false, user: null };
-  }
+  if (!success) return { isLogged: false, username: null };
 
-  return { isLogged: true, user };
+  return { isLogged: true, username };
 };
 
 //========================================================//

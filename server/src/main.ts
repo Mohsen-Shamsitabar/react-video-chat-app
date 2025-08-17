@@ -1,12 +1,19 @@
-import { NETWORK, SOCKET_CHANNELS } from "@shared/constants.ts";
-import { type UserData } from "@shared/types.ts";
+import { NETWORK, SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
+import { type NewRoomFormSchema } from "@shared/new-room-form-schema.ts";
+import {
+  type LoginChannelData,
+  type Room,
+  type UserData,
+} from "@shared/types.ts";
+import { generateRoomId, generateUserId } from "@shared/utils.ts";
 import cors from "cors";
 import express from "express";
 import http from "http";
-import { Server as IoServer } from "socket.io";
+import { Server as IoServer, type Socket } from "socket.io";
 import { LOG_MESSAGES } from "./constants.ts";
+import roomsMap from "./database/rooms.ts";
 import { connectedUsersMap, connectedUsersSet } from "./database/users.ts";
-import { registerLoginRoute } from "./routes/post.ts";
+import { registerAddRoomRoute, registerLoginRoute } from "./routes/post.ts";
 
 const expressApp = express();
 
@@ -15,6 +22,7 @@ expressApp.use(express.json(), cors());
 //=== ROUTES ===//
 
 registerLoginRoute(expressApp);
+registerAddRoomRoute(expressApp);
 
 //==============//
 
@@ -28,55 +36,129 @@ const ioServer = new IoServer(httpServer, {
   },
 });
 
+const makeHandleSocketLeavingRoom =
+  (socket: Socket) => async (roomId: Room["id"]) => {
+    const userData = connectedUsersMap.getByValue(socket);
+
+    if (!userData) return;
+
+    const room = roomsMap.get(roomId);
+
+    if (!room) return;
+
+    await socket.leave(roomId);
+
+    userData.roomId = null;
+
+    room.connectedUsers.delete(userData.id);
+
+    if (room.connectedUsers.size <= 0) {
+      roomsMap.delete(room.id);
+    }
+
+    console.log(LOG_MESSAGES.USER_LEFT(userData.username, room.name));
+  };
+
 ioServer.on("connection", socket => {
-  console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id));
+  socket.on(SOCKET_CHANNEL_NAMES.LOGIN, async (username: LoginChannelData) => {
+    const userId = generateUserId();
 
-  socket.on(SOCKET_CHANNELS.LOGIN, (userData: UserData) => {
+    const userData: UserData = {
+      id: userId,
+      username,
+      roomId: null,
+    };
+
     connectedUsersMap.set(userData, socket);
-
-    const { username } = userData;
 
     const loweredUsername = username.toLowerCase();
 
     connectedUsersSet.add(loweredUsername);
 
-    socket.emit(
-      SOCKET_CHANNELS.GET_LOGGED_USERS,
-      Array.from(connectedUsersMap.keys()),
-    );
+    await socket.join(loweredUsername);
+
+    ioServer
+      .in(loweredUsername)
+      .emit(
+        SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS,
+        Array.from(connectedUsersMap.keys()),
+      );
 
     socket.broadcast.emit(
-      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS,
       Array.from(connectedUsersMap.keys()),
     );
+
+    console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id, userId));
   });
 
-  socket.on("disconnect", reason => {
+  socket.on(
+    SOCKET_CHANNEL_NAMES.ADD_ROOM,
+    (roomData: NewRoomFormSchema, ackSender: (roomId: Room["id"]) => void) => {
+      const { name, size } = roomData;
+
+      const roomId = generateRoomId();
+
+      const room: Room = {
+        id: roomId,
+        name,
+        size,
+        connectedUsers: new Set([]),
+      };
+
+      roomsMap.set(roomId, room);
+
+      ackSender(roomId);
+
+      console.log(LOG_MESSAGES.ROOM_CREATED(name));
+    },
+  );
+
+  socket.on(SOCKET_CHANNEL_NAMES.JOIN_ROOM, async (roomId: Room["id"]) => {
+    const userData = connectedUsersMap.getByValue(socket);
+
+    if (!userData) return;
+
+    const room = roomsMap.get(roomId);
+
+    if (!room) return;
+
+    await socket.join(roomId);
+
+    userData.roomId = roomId;
+
+    room.connectedUsers.add(userData.id);
+
+    console.log(LOG_MESSAGES.USER_JOINED(userData.username, room.name));
+  });
+
+  socket.on(
+    SOCKET_CHANNEL_NAMES.LEAVE_ROOM,
+    makeHandleSocketLeavingRoom(socket),
+  );
+
+  socket.on("disconnect", async reason => {
     const user = connectedUsersMap.getByValue(socket);
 
     if (!user) return;
-
-    console.log(LOG_MESSAGES.SOCKET_DISCONNECT(socket.id, reason));
 
     const { username } = user;
 
     const loweredUsername = username.toLowerCase();
 
+    if (user.roomId) {
+      await makeHandleSocketLeavingRoom(socket)(user.roomId);
+    }
+
     connectedUsersSet.delete(loweredUsername);
     connectedUsersMap.deleteByValue(socket);
 
-    /*used both "emit" and "broadcast.emit" to make sure everyone (current user included)
-    has recieved the message.*/
-
-    socket.emit(
-      SOCKET_CHANNELS.GET_LOGGED_USERS,
-      Array.from(connectedUsersMap.keys()),
-    );
-
     socket.broadcast.emit(
-      SOCKET_CHANNELS.GET_LOGGED_USERS,
+      SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS,
       Array.from(connectedUsersMap.keys()),
     );
+
+    console.log(LOG_MESSAGES.SOCKET_DISCONNECT(socket.id, user.id, reason));
   });
 });
 

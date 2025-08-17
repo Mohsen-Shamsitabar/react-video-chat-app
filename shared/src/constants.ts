@@ -16,11 +16,15 @@ export const NETWORK = {
 
 export const API_ROUTES = {
   LOGIN: "/users/login",
+  ADD_ROOM: "/rooms/add",
 } as const;
 
-export const SOCKET_CHANNELS = {
+export const SOCKET_CHANNEL_NAMES = {
   LOGIN: "LOGIN",
   GET_LOGGED_USERS: "GET_LOGGED_USERS",
+  ADD_ROOM: "ADD_ROOM",
+  JOIN_ROOM: "JOIN_ROOM",
+  LEAVE_ROOM: "LEAVE_ROOM",
 } as const;
 
 //=== == UTILS == ===//

@@ -1,6 +1,6 @@
 import { ScrollArea } from "@client/components/ui/scroll-area.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { SOCKET_CHANNELS } from "@shared/constants.ts";
+import { SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import { type UserData } from "@shared/types.ts";
 import * as React from "react";
 import UserCard from "./user-card.tsx";
@@ -13,12 +13,12 @@ const AllUsersContainer = () => {
   React.useEffect(() => {
     if (!socket) return;
 
-    socket.on(SOCKET_CHANNELS.GET_LOGGED_USERS, (users: UserData[]) => {
+    socket.on(SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS, (users: UserData[]) => {
       setAllUsers(users);
     });
 
     return () => {
-      socket.off(SOCKET_CHANNELS.GET_LOGGED_USERS);
+      socket.off(SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS);
     };
   }, []);
 

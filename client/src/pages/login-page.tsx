@@ -15,8 +15,7 @@ import { Form } from "@client/components/ui/form.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { MAIN_HEIGHT } from "@client/lib/css-constants.ts";
 import { cn } from "@client/lib/utils.ts";
-import { useAppDispatch } from "@client/redux/hooks.ts";
-import { userAction } from "@client/redux/slices/user-slice.ts";
+import { useActiveUser } from "@client/providers/active-user-provider.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   loginFormSchema,
@@ -37,7 +36,7 @@ const LoginPage = () => {
   const submitBtnRef = React.useRef<null | HTMLButtonElement>(null);
 
   const navigate = useNavigate();
-  const appDispatch = useAppDispatch();
+  const { setUsername } = useActiveUser();
 
   const { formState, setError, clearErrors } = form;
   const { errors } = formState;
@@ -64,7 +63,7 @@ const LoginPage = () => {
     }
 
     clearErrors();
-    appDispatch(userAction.setUsername(formData.username));
+    setUsername(formData.username);
     void navigate(PAGE_ROUTES.DASHBOARD);
   };
 

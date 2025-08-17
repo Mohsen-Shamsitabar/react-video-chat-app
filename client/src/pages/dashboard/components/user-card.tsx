@@ -5,7 +5,7 @@ import {
 } from "@client/components/ui/avatar.tsx";
 import { Card, CardContent } from "@client/components/ui/card.tsx";
 import { cn } from "@client/lib/utils.ts";
-import { useAppSelector } from "@client/redux/hooks.ts";
+import { useActiveUser } from "@client/providers/active-user-provider.tsx";
 import { type UserData } from "@shared/types.ts";
 import * as React from "react";
 
@@ -14,11 +14,11 @@ type Props = UserData;
 const UserCard = (props: Props) => {
   const { username, status } = props;
 
-  const loggedUser = useAppSelector(state => state.user);
+  const { username: activeUsername } = useActiveUser();
 
   const isOwnCard = React.useMemo(
-    () => loggedUser.username === username,
-    [loggedUser],
+    () => activeUsername === username,
+    [activeUsername],
   );
 
   const firstChar = React.useMemo(() => username[0]!, [username]);

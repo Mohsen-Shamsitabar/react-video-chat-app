@@ -1,12 +1,16 @@
+import { addRoom } from "@client/api/add-room.ts";
 import StringFormControl from "@client/components/form-controls/string-form-control.tsx";
 import { Button } from "@client/components/ui/button.tsx";
 import { Form } from "@client/components/ui/form.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
+import { useSocket } from "@client/providers/socket-provider.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import {
   newRoomFormSchema,
   type NewRoomFormSchema,
 } from "@shared/new-room-form-schema.ts";
+import { type RoomId } from "@shared/types.ts";
 import * as React from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -15,14 +19,14 @@ const NewRoomForm = () => {
   const form = useForm<NewRoomFormSchema>({
     resolver: zodResolver(newRoomFormSchema),
     defaultValues: {
-      roomName: "",
-      roomSize: 2,
+      name: "",
+      size: 2,
     },
   });
 
   const navigate = useNavigate();
 
-  const { formState } = form;
+  const { formState, clearErrors, setError } = form;
   const { errors } = formState;
 
   const errorCount = React.useMemo(
@@ -30,12 +34,29 @@ const NewRoomForm = () => {
     [formState],
   );
 
-  const onSubmit: SubmitHandler<NewRoomFormSchema> = formData => {
-    console.log(formData);
+  const { socket } = useSocket();
 
-    const { roomName, roomSize } = formData;
+  if (!socket) return null;
 
-    void navigate(`${PAGE_ROUTES.CHATROOM}/${roomName}`);
+  const onSubmit: SubmitHandler<NewRoomFormSchema> = async formData => {
+    const { error, message } = await addRoom(formData);
+
+    if (error) {
+      setError("name", { message });
+      return;
+    }
+
+    const { name } = formData;
+
+    const roomId = (await socket.emitWithAck(
+      SOCKET_CHANNEL_NAMES.ADD_ROOM,
+      formData,
+    )) as RoomId;
+
+    socket.emit(SOCKET_CHANNEL_NAMES.JOIN_ROOM, roomId);
+
+    clearErrors();
+    void navigate(`${PAGE_ROUTES.CHATROOM}/${name}`);
   };
 
   return (
@@ -47,13 +68,13 @@ const NewRoomForm = () => {
       >
         <StringFormControl<NewRoomFormSchema>
           label="Room name"
-          name="roomName"
+          name="name"
           placeholder="chatroom 101"
         />
 
         <StringFormControl<NewRoomFormSchema>
           label="Room size"
-          name="roomSize"
+          name="size"
           description="The maximum amount of users who can connect to this room."
           disabled
         />
