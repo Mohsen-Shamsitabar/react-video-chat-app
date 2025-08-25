@@ -20,12 +20,7 @@ const Header = () => {
     }
 
     if (pathname.includes(PAGE_ROUTES.CHATROOM)) {
-      const splittedLocation = pathname.split("/");
-      const roomName = splittedLocation[splittedLocation.length - 1];
-
-      if (!roomName) return;
-
-      setContext(`chatroom: ${roomName}`);
+      setContext(`chatroom`);
       return;
     }
 

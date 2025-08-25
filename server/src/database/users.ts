@@ -9,4 +9,9 @@ const connectedUsersMap = new BiDirectionalMap<UserData, Socket>();
  */
 const connectedUsersSet = new Set<UserData["username"]>();
 
-export { connectedUsersMap, connectedUsersSet };
+const updateConnectedUsersMap = (newUserData: UserData, socket: Socket) => {
+  connectedUsersMap.deleteByValue(socket);
+  connectedUsersMap.set(newUserData, socket);
+};
+
+export { connectedUsersMap, connectedUsersSet, updateConnectedUsersMap };

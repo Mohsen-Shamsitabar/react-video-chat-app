@@ -64,6 +64,9 @@ export class BiDirectionalMap<T, K> {
   //==== SET
 
   public set(key: T, value: K): void {
+    // this.keyMap.delete(key);
+    // this.valueMap.delete(value);
+
     this.keyMap.set(key, value);
     this.valueMap.set(value, key);
   }

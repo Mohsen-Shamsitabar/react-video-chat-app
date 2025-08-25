@@ -1,4 +1,4 @@
-export const CHATROOM_PARAM_NAME = "roomName";
+export const CHATROOM_PARAM_NAME = "roomId";
 
 export const PAGE_ROUTES = {
   HOMEPAGE: "/",

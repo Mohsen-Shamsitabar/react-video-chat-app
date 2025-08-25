@@ -46,17 +46,15 @@ const NewRoomForm = () => {
       return;
     }
 
-    const { name } = formData;
-
     const roomId = (await socket.emitWithAck(
-      SOCKET_CHANNEL_NAMES.ADD_ROOM,
+      SOCKET_CHANNEL_NAMES.ROOM_ADD,
       formData,
     )) as RoomId;
 
-    socket.emit(SOCKET_CHANNEL_NAMES.JOIN_ROOM, roomId);
+    socket.emit(SOCKET_CHANNEL_NAMES.ROOM_JOIN, roomId);
 
     clearErrors();
-    void navigate(`${PAGE_ROUTES.CHATROOM}/${name}`);
+    void navigate(`${PAGE_ROUTES.CHATROOM}/${roomId}`);
   };
 
   return (

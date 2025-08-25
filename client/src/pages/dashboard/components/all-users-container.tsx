@@ -13,12 +13,14 @@ const AllUsersContainer = () => {
   React.useEffect(() => {
     if (!socket) return;
 
-    socket.on(SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS, (users: UserData[]) => {
+    socket.emit(SOCKET_CHANNEL_NAMES.USERS_FETCH);
+
+    socket.on(SOCKET_CHANNEL_NAMES.USERS_REFRESH, (users: UserData[]) => {
       setAllUsers(users);
     });
 
     return () => {
-      socket.off(SOCKET_CHANNEL_NAMES.GET_LOGGED_USERS);
+      socket.off(SOCKET_CHANNEL_NAMES.USERS_REFRESH);
     };
   }, []);
 

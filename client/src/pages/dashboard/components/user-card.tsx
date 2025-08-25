@@ -12,7 +12,7 @@ import * as React from "react";
 type Props = UserData;
 
 const UserCard = (props: Props) => {
-  const { username, status } = props;
+  const { username, roomSummary } = props;
 
   const { username: activeUsername } = useActiveUser();
 
@@ -33,7 +33,7 @@ const UserCard = (props: Props) => {
 
         <div className="flex flex-col justify-center">
           <h5 className="text-sm">{username}</h5>
-          <p className="text-xs text-sidebar-accent-foreground">{status}</p>
+          <p className="text-xs text-sidebar-accent-foreground">{`in ${roomSummary ? roomSummary.name : "dashboard"}`}</p>
         </div>
       </CardContent>
     </Card>
