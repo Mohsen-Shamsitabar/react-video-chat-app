@@ -2,7 +2,6 @@ import { Card, CardContent } from "@client/components/ui/card.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { cn } from "@client/lib/utils.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import type { Room } from "@shared/types.ts";
 import * as React from "react";
 import { useNavigate } from "react-router";
@@ -30,7 +29,7 @@ const RoomCard = (props: Props) => {
     // we MUST also handle this on server!
     if (isRoomFull) return;
 
-    socket.emit(SOCKET_CHANNEL_NAMES.ROOM_JOIN, room.id);
+    socket.emit("room/join", room.id);
     void navigate(`${PAGE_ROUTES.CHATROOM}/${room.id}`);
   };
 

@@ -19,19 +19,6 @@ export const API_ROUTES = {
   ADD_ROOM: "/rooms/add",
 } as const;
 
-export const SOCKET_CHANNEL_NAMES = {
-  USER_LOGIN: "USER:LOGIN",
-  USERS_REFRESH: "USERS:REFRESH",
-  USERS_FETCH: "USERS:FETCH",
-  ROOM_ADD: "ROOM:ADD",
-  ROOM_JOIN: "ROOM:JOIN",
-  ROOM_LEAVE: "ROOM:LEAVE",
-  ROOM_FETCH: "ROOM:FETCH",
-  ROOM_REFRESH: "ROOM:REFRESH",
-  ROOMS_REFRESH: "ROOMS:REFRESH",
-  ROOMS_FETCH: "ROOMS:FETCH",
-} as const;
-
 //=== == UTILS == ===//
 
 export const textRegex = /^[a-zA-Z0-9_]*$/;

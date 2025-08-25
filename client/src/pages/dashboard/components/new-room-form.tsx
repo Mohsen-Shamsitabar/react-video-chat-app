@@ -5,12 +5,10 @@ import { Form } from "@client/components/ui/form.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import {
   newRoomFormSchema,
   type NewRoomFormSchema,
 } from "@shared/new-room-form-schema.ts";
-import { type RoomId } from "@shared/types.ts";
 import * as React from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -46,12 +44,9 @@ const NewRoomForm = () => {
       return;
     }
 
-    const roomId = (await socket.emitWithAck(
-      SOCKET_CHANNEL_NAMES.ROOM_ADD,
-      formData,
-    )) as RoomId;
+    const roomId = await socket.emitWithAck("room/add", formData);
 
-    socket.emit(SOCKET_CHANNEL_NAMES.ROOM_JOIN, roomId);
+    socket.emit("room/join", roomId);
 
     clearErrors();
     void navigate(`${PAGE_ROUTES.CHATROOM}/${roomId}`);

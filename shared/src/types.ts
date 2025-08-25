@@ -1,6 +1,8 @@
 import type { LoginFormSchema } from "./login-form-schema.ts";
 import { type NewRoomFormSchema } from "./new-room-form-schema.ts";
 
+//======================< REST API >======================//
+
 export type LoginResponseBody = {
   message: string;
 };
@@ -9,15 +11,25 @@ export type AddRoomResponseBody = {
   message: string;
 };
 
-//========================================
+//======================< DATA >======================//
 
 export type MessageId = `MSG_${string}`;
 export type RoomId = `ROOM_${string}`;
 export type UserId = `USER_${string}`;
 
+export type Room = NewRoomFormSchema & {
+  id: RoomId;
+  connectedUsers: UserId[];
+};
+
+export type RoomSummary = {
+  id: Room["id"];
+  name: Room["name"];
+};
+
 export type UserData = LoginFormSchema & {
   id: UserId;
-  roomId: RoomId | null;
+  roomSummary: RoomSummary | null;
 };
 
 export type Message = {
@@ -26,9 +38,34 @@ export type Message = {
   context: string;
 };
 
-export type Room = NewRoomFormSchema & {
-  id: RoomId;
-  connectedUsers: Set<UserData["id"]>;
+//======================< SOCKET >======================//
+
+export type ServerToClientEvents = {
+  // withAck: (d: string, callback: (e: number) => void) => void;
+  "users/refresh": (users: UserData[]) => void;
+  "rooms/refresh": (rooms: Room[]) => void;
+  "room/refresh": (room: Room | null) => void;
 };
 
-export type LoginChannelData = UserData["username"];
+export type ClientToServerEvents = {
+  "user/login": (username: UserData["username"]) => void;
+  "users/fetch": () => void;
+  "room/add": (
+    roomFormData: NewRoomFormSchema,
+    sendRoomId: (roomId: Room["id"]) => void,
+  ) => void;
+  "room/join": (roomId: Room["id"]) => void;
+  "room/leave": (roomId: Room["id"]) => void;
+  "room/fetch": (roomId: Room["id"]) => void;
+  "rooms/fetch": () => void;
+};
+
+// used for inter-server communication
+export type InterServerEvents = {
+  ping: () => void;
+};
+
+export type SocketData = {
+  username: UserData["username"];
+  userId: UserData["id"];
+};

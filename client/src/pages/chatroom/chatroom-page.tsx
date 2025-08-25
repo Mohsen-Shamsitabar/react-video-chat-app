@@ -2,7 +2,6 @@ import { Button } from "@client/components/ui/button.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import type { ChatroomParams } from "@client/types.ts";
-import { SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
 import { type Room } from "@shared/types.ts";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router";
@@ -19,15 +18,14 @@ const ChatroomPage = () => {
 
   React.useEffect(() => {
     if (!socket) return;
+    if (!roomId) return;
 
-    socket.emit(SOCKET_CHANNEL_NAMES.ROOM_FETCH, roomId);
+    socket.emit("room/fetch", roomId);
 
-    socket.on(SOCKET_CHANNEL_NAMES.ROOM_REFRESH, (room: Room | null) =>
-      setRoom(room),
-    );
+    socket.on("room/refresh", (room: Room | null) => setRoom(room));
 
     return () => {
-      socket.off(SOCKET_CHANNEL_NAMES.ROOM_REFRESH);
+      socket.off("room/refresh");
     };
   }, []);
 
@@ -35,7 +33,7 @@ const ChatroomPage = () => {
   if (!room) return null;
 
   const handleLeaveRoom = () => {
-    socket.emit(SOCKET_CHANNEL_NAMES.ROOM_LEAVE, room.id);
+    socket.emit("room/leave", room.id);
     void navigate(PAGE_ROUTES.DASHBOARD);
   };
 

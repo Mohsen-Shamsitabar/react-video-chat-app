@@ -1,9 +1,13 @@
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "@shared/types.ts";
 import { createContext, useContext, useState } from "react";
 import { type Socket } from "socket.io-client";
 
 type SocketProviderProps = {
   children: React.ReactNode;
-  socket: Socket | null;
+  socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
 };
 
 type SocketProviderState = {

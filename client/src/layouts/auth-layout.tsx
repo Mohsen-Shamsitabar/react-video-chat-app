@@ -1,10 +1,14 @@
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useLoginStatus } from "@client/lib/hooks.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { NETWORK, SOCKET_CHANNEL_NAMES } from "@shared/constants.ts";
+import { NETWORK } from "@shared/constants.ts";
+import {
+  type ClientToServerEvents,
+  type ServerToClientEvents,
+} from "@shared/types.ts";
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router";
-import { io } from "socket.io-client";
+import { io, type Socket } from "socket.io-client";
 
 const AuthLayout = () => {
   const { isLogged, username } = useLoginStatus();
@@ -21,14 +25,16 @@ const AuthLayout = () => {
 
     //=== SOCKET ===//
 
-    const socket = io(NETWORK.SERVER_URL);
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+      NETWORK.SERVER_URL,
+    );
 
     socket.on("connect", () => {
       console.log(
         `Socket '${socket.id}' with username '${username}' connected`,
       );
 
-      socket.emit(SOCKET_CHANNEL_NAMES.USER_LOGIN, username);
+      socket.emit("user/login", username);
 
       setSocket(socket);
     });
