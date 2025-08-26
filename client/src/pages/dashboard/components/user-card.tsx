@@ -24,16 +24,22 @@ const UserCard = (props: Props) => {
   const firstChar = React.useMemo(() => username[0]!, [username]);
 
   return (
-    <Card className={cn("p-1 mb-2", isOwnCard ? "border-chart-2" : undefined)}>
-      <CardContent className="flex items-center p-1">
+    <Card
+      className={cn(
+        "p-1 mb-2 w-full",
+        isOwnCard ? "border-chart-2" : undefined,
+      )}
+    >
+      <CardContent className="flex items-center p-1 w-full">
         <Avatar className="mr-2">
           <AvatarImage src="/" />
-          <AvatarFallback className="">{firstChar}</AvatarFallback>
+          <AvatarFallback>{firstChar}</AvatarFallback>
         </Avatar>
 
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center w-full">
           <h5 className="text-sm">{username}</h5>
-          <p className="text-xs text-sidebar-accent-foreground">{`in ${roomSummary ? roomSummary.name : "dashboard"}`}</p>
+
+          <span className="text-xs text-sidebar-accent-foreground">{`in ${roomSummary ? roomSummary.name : "dashboard"}`}</span>
         </div>
       </CardContent>
     </Card>

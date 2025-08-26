@@ -13,10 +13,10 @@ const AllRoomsContainer = () => {
     if (!socket) return;
 
     void (async () => {
-      const rooms = await socket.emitWithAck("rooms/fetch");
+      const rooms = await socket.emitWithAck("rooms/fetch", undefined);
 
       setRooms(rooms);
-    });
+    })();
 
     socket.on("rooms/refresh", (rooms: Room[]) => setRooms(rooms));
 
@@ -37,7 +37,7 @@ const AllRoomsContainer = () => {
   };
 
   return (
-    <ScrollArea className="size-full overflow-auto flex flex-col pr-6">
+    <ScrollArea className="size-full overflow-auto flex flex-col">
       {renderRooms()}
     </ScrollArea>
   );

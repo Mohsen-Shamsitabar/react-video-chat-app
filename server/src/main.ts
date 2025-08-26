@@ -48,17 +48,40 @@ const ioServer = new IoServer<
   },
 });
 
-const createUsersDataPayload = () => {
-  return Array.from(connectedUsersMap.keys()).sort(
-    (user1, user2) =>
-      user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
-  );
+const createUsersDataPayload = (userIds?: UserData["id"][]): UserData[] => {
+  if (!userIds) {
+    return Array.from(connectedUsersMap.keys()).sort(
+      (user1, user2) =>
+        user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
+    );
+  }
+
+  const userIdsSet = new Set(userIds);
+
+  // optimize this!
+  return Array.from(connectedUsersMap.keys())
+    .filter(user => userIdsSet.has(user.id))
+    .sort(
+      (user1, user2) =>
+        user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
+    );
 };
 
-const createRoomsPayload = () => {
-  return Array.from(roomsMap.values()).sort(
-    (room1, room2) => room1.name.charCodeAt(0) - room2.name.charCodeAt(0),
-  );
+const createRoomsPayload = (roomIds?: Room["id"][]): Room[] => {
+  if (!roomIds) {
+    return Array.from(roomsMap.values()).sort(
+      (room1, room2) => room1.name.charCodeAt(0) - room2.name.charCodeAt(0),
+    );
+  }
+
+  const roomIdsSet = new Set(roomIds);
+
+  // optimize this
+  return Array.from(roomsMap.values())
+    .filter(room => roomIdsSet.has(room.id))
+    .sort(
+      (room1, room2) => room1.name.charCodeAt(0) - room2.name.charCodeAt(0),
+    );
 };
 
 const makeHandleSocketLeavingRoom =
@@ -116,12 +139,12 @@ ioServer.on("connection", socket => {
     console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id, userId));
   });
 
-  socket.on("users/fetch", sendUsers => {
-    sendUsers(createUsersDataPayload());
+  socket.on("users/fetch", (userIds, sendUsers) => {
+    sendUsers(createUsersDataPayload(userIds));
   });
 
-  socket.on("rooms/fetch", sendRooms => {
-    sendRooms(createRoomsPayload());
+  socket.on("rooms/fetch", (roomIds, sendRooms) => {
+    sendRooms(createRoomsPayload(roomIds));
   });
 
   socket.on("room/fetch", (roomId: Room["id"], sendRoom) => {

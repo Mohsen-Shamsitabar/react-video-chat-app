@@ -61,7 +61,7 @@ const DashboardPage = () => {
 
         <Separator
           orientation="vertical"
-          className="mr-6"
+          className="mx-6"
         />
 
         <section className="w-3/4 h-full flex flex-col">

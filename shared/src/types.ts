@@ -47,8 +47,15 @@ export type ServerToClientEvents = {
 };
 
 export type ClientToServerEvents = {
+  "users/fetch": (
+    userIds: UserData["id"][] | undefined,
+    sendUsers: (users: UserData[]) => void,
+  ) => void;
   "user/login": (username: UserData["username"]) => void;
-  "users/fetch": (sendUsers: (users: UserData[]) => void) => void;
+  "rooms/fetch": (
+    roomIds: Room["id"][] | undefined,
+    sendRooms: (rooms: Room[]) => void,
+  ) => void;
   "room/add": (
     roomFormData: NewRoomFormSchema,
     sendRoomId: (roomId: Room["id"]) => void,
@@ -59,7 +66,6 @@ export type ClientToServerEvents = {
     roomId: Room["id"],
     sendRoom: (room: Room | null) => void,
   ) => void;
-  "rooms/fetch": (sendRooms: (rooms: Room[]) => void) => void;
 };
 
 // used for inter-server communication

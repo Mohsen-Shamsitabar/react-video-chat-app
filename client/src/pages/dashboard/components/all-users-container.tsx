@@ -13,7 +13,7 @@ const AllUsersContainer = () => {
     if (!socket) return;
 
     void (async () => {
-      const users = await socket.emitWithAck("users/fetch");
+      const users = await socket.emitWithAck("users/fetch", undefined);
 
       setAllUsers(users);
     })();
@@ -39,7 +39,7 @@ const AllUsersContainer = () => {
   };
 
   return (
-    <ScrollArea className="size-full overflow-auto pr-6">
+    <ScrollArea className="size-full overflow-y-scroll overflow-x-hidden">
       {renderUserCards()}
     </ScrollArea>
   );
