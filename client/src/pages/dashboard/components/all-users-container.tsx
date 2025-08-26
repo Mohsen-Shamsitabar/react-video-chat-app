@@ -12,7 +12,11 @@ const AllUsersContainer = () => {
   React.useEffect(() => {
     if (!socket) return;
 
-    socket.emit("users/fetch");
+    void (async () => {
+      const users = await socket.emitWithAck("users/fetch");
+
+      setAllUsers(users);
+    })();
 
     socket.on("users/refresh", (users: UserData[]) => {
       setAllUsers(users);

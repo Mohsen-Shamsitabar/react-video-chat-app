@@ -116,20 +116,18 @@ ioServer.on("connection", socket => {
     console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id, userId));
   });
 
-  socket.on("users/fetch", () => {
-    ioServer.in(socket.id).emit("users/refresh", createUsersDataPayload());
+  socket.on("users/fetch", sendUsers => {
+    sendUsers(createUsersDataPayload());
   });
 
-  socket.on("rooms/fetch", () => {
-    ioServer.in(socket.id).emit("rooms/refresh", createRoomsPayload());
+  socket.on("rooms/fetch", sendRooms => {
+    sendRooms(createRoomsPayload());
   });
 
-  socket.on("room/fetch", (roomId: Room["id"]) => {
+  socket.on("room/fetch", (roomId: Room["id"], sendRoom) => {
     const room = roomsMap.get(roomId) ?? null;
 
-    // ROOM MIGHT NOT EXIST!
-
-    ioServer.in(socket.id).emit("room/refresh", room);
+    sendRoom(room);
   });
 
   socket.on(

@@ -20,13 +20,11 @@ const ChatroomPage = () => {
     if (!socket) return;
     if (!roomId) return;
 
-    socket.emit("room/fetch", roomId);
+    void (async () => {
+      const room = await socket.emitWithAck("room/fetch", roomId);
 
-    socket.on("room/refresh", (room: Room | null) => setRoom(room));
-
-    return () => {
-      socket.off("room/refresh");
-    };
+      setRoom(room);
+    })();
   }, []);
 
   if (!socket) return null;

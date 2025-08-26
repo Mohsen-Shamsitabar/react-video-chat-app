@@ -12,7 +12,11 @@ const AllRoomsContainer = () => {
   React.useEffect(() => {
     if (!socket) return;
 
-    socket.emit("rooms/fetch");
+    void (async () => {
+      const rooms = await socket.emitWithAck("rooms/fetch");
+
+      setRooms(rooms);
+    });
 
     socket.on("rooms/refresh", (rooms: Room[]) => setRooms(rooms));
 

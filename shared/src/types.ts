@@ -44,20 +44,22 @@ export type ServerToClientEvents = {
   // withAck: (d: string, callback: (e: number) => void) => void;
   "users/refresh": (users: UserData[]) => void;
   "rooms/refresh": (rooms: Room[]) => void;
-  "room/refresh": (room: Room | null) => void;
 };
 
 export type ClientToServerEvents = {
   "user/login": (username: UserData["username"]) => void;
-  "users/fetch": () => void;
+  "users/fetch": (sendUsers: (users: UserData[]) => void) => void;
   "room/add": (
     roomFormData: NewRoomFormSchema,
     sendRoomId: (roomId: Room["id"]) => void,
   ) => void;
   "room/join": (roomId: Room["id"]) => void;
   "room/leave": (roomId: Room["id"]) => void;
-  "room/fetch": (roomId: Room["id"]) => void;
-  "rooms/fetch": () => void;
+  "room/fetch": (
+    roomId: Room["id"],
+    sendRoom: (room: Room | null) => void,
+  ) => void;
+  "rooms/fetch": (sendRooms: (rooms: Room[]) => void) => void;
 };
 
 // used for inter-server communication
