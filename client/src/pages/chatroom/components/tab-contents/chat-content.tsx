@@ -4,6 +4,14 @@ type Props = {
   handleTabContentOpen: () => void;
 };
 
+const ChatContentTexts = () => {
+  return null;
+};
+
+const ChatContentInput = () => {
+  return null;
+};
+
 const ChatContent = (props: Props) => {
   const { handleTabContentOpen } = props;
 
@@ -14,9 +22,9 @@ const ChatContent = (props: Props) => {
         handleTabContentOpen={handleTabContentOpen}
       />
 
-      <div>RENDER MESSAGES BOX</div>
+      <ChatContentTexts />
 
-      <div>RENDER MESSAGE INPUT</div>
+      <ChatContentInput />
     </div>
   );
 };
