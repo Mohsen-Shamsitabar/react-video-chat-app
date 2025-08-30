@@ -1,0 +1,16 @@
+{
+  "name": "shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "http-status-codes": "^2.3.0",
+    "nanoid": "^5.1.5",
+    "zod": "^4.0.5",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {}
+}

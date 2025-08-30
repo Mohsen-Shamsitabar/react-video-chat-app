@@ -1,9 +1,11 @@
-import { ThemeProvider } from "@client/providers/theme-provider.tsx";
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import App from "./App.tsx";
 import "./index.css";
+import { ActiveUserProvider } from "./providers/active-user-provider.tsx";
+import { SocketProvider } from "./providers/socket-provider.tsx";
+import { ThemeProvider } from "./providers/theme-provider.tsx";
 
 const rootElement = document.getElementById("root");
 
@@ -15,7 +17,11 @@ reactRoot.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <App />
+        <ActiveUserProvider username={null}>
+          <SocketProvider socket={null}>
+            <App />
+          </SocketProvider>
+        </ActiveUserProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,

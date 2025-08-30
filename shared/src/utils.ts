@@ -1,3 +1,6 @@
+import { nanoid } from "nanoid";
+import type { MessageId, RoomId, UserId } from "./types.ts";
+
 /**
  * **Both, `keys` and `values` must be unique**,
  * Otherwise this data structure wont function correctly!
@@ -61,7 +64,26 @@ export class BiDirectionalMap<T, K> {
   //==== SET
 
   public set(key: T, value: K): void {
+    // this.keyMap.delete(key);
+    // this.valueMap.delete(value);
+
     this.keyMap.set(key, value);
     this.valueMap.set(value, key);
   }
+
+  //==== KEYS
+
+  public keys() {
+    return this.keyMap.keys();
+  }
+
+  //==== VALUES
+
+  public values() {
+    return this.keyMap.values();
+  }
 }
+
+export const generateRoomId = (): RoomId => `ROOM_${nanoid()}`;
+export const generateUserId = (): UserId => `USER_${nanoid()}`;
+export const generateMessageId = (): MessageId => `MSG_${nanoid()}`;

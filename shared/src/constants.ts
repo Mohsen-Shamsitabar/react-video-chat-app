@@ -16,19 +16,26 @@ export const NETWORK = {
 
 export const API_ROUTES = {
   LOGIN: "/users/login",
+  ADD_ROOM: "/rooms/add",
 } as const;
 
 //=== == UTILS == ===//
 
+export const textRegex = /^[a-zA-Z0-9_]*$/;
+export const numberRegex = /^\d+$/;
+
 export const ERROR_MESSAGES = {
   required: "This field is required!",
-  invalid: (inputType: "text" | "email") => {
+  invalid: (inputType: "text" | "email" | "number") => {
     switch (inputType) {
       case "text":
         return "Only letters, numbers, and underscores are allowed!";
 
       case "email":
         return "Please enter a valid email address!";
+
+      case "number":
+        return "Please enter a valid number!";
 
       default:
         return "Field is invalid!";
