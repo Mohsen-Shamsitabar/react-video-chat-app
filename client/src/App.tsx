@@ -1,6 +1,7 @@
 import "normalize.css";
 import { Route, Routes } from "react-router";
 import { Header, NotFoundPage } from "./components/common/index.ts";
+import { Toaster } from "./components/ui/sonner.tsx";
 import AuthLayout from "./layouts/auth-layout.tsx";
 import { CHATROOM_PARAM_NAME, PAGE_ROUTES } from "./lib/constants.ts";
 import ChatroomPage from "./pages/chatroom/chatroom-page.tsx";
@@ -11,6 +12,11 @@ const App = () => {
   return (
     <>
       <Header />
+
+      <Toaster
+        position="top-center"
+        duration={1500}
+      />
 
       <Routes>
         <Route
