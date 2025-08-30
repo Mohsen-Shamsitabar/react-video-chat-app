@@ -51,21 +51,24 @@ export type ClientToServerEvents = {
     userIds: UserData["id"][] | undefined,
     sendUsers: (users: UserData[]) => void,
   ) => void;
-  "user/login": (username: UserData["username"]) => void;
+  "room/fetch": (
+    roomId: Room["id"],
+    sendRoom: (room: Room | null) => void,
+  ) => void;
   "rooms/fetch": (
     roomIds: Room["id"][] | undefined,
     sendRooms: (rooms: Room[]) => void,
   ) => void;
+
+  //==================
+
+  "user/login": (username: UserData["username"]) => void;
   "room/add": (
     roomFormData: NewRoomFormSchema,
     sendRoomId: (roomId: Room["id"]) => void,
   ) => void;
   "room/join": (roomId: Room["id"]) => void;
   "room/leave": (roomId: Room["id"]) => void;
-  "room/fetch": (
-    roomId: Room["id"],
-    sendRoom: (room: Room | null) => void,
-  ) => void;
 };
 
 // used for inter-server communication
