@@ -1,4 +1,4 @@
-import NotFoundPage from "@client/components/common/not-found-page.tsx";
+import { LoadingPage, NotFoundPage } from "@client/components/common/index.ts";
 import { Button } from "@client/components/ui/button.tsx";
 import {
   Tabs,
@@ -27,7 +27,7 @@ const ChatroomPage = () => {
   // How to know if room exists?
   const { roomId } = useParams<ChatroomParams>();
 
-  const [room, setRoom] = React.useState<Room | null>(null);
+  const [room, setRoom] = React.useState<Room | null | undefined>(undefined);
   const [tabValue, setTabValue] = React.useState<ChatroomTabNames>(
     CHATROOM_TAB_NAMES.DETAILS,
   );
@@ -49,6 +49,7 @@ const ChatroomPage = () => {
   }, []);
 
   if (!socket) return null;
+  if (typeof room === "undefined") return <LoadingPage />;
   if (!room) return <NotFoundPage />;
 
   // This might need fixin
