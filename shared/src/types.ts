@@ -44,6 +44,7 @@ export type ServerToClientEvents = {
   // withAck: (d: string, callback: (e: number) => void) => void;
   "users/refresh": (users: UserData[]) => void;
   "rooms/refresh": (rooms: Room[]) => void;
+  "rooms/users/refresh": (users: UserData[]) => void;
 };
 
 export type ClientToServerEvents = {
@@ -51,13 +52,13 @@ export type ClientToServerEvents = {
     userIds: UserData["id"][] | undefined,
     sendUsers: (users: UserData[]) => void,
   ) => void;
-  "room/fetch": (
-    roomId: Room["id"],
-    sendRoom: (room: Room | null) => void,
-  ) => void;
   "rooms/fetch": (
     roomIds: Room["id"][] | undefined,
     sendRooms: (rooms: Room[]) => void,
+  ) => void;
+  "rooms/users/fetch": (
+    roomId: Room["id"],
+    sendUsers: (users: UserData[]) => void,
   ) => void;
 
   //==================

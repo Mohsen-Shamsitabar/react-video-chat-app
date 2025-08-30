@@ -1,12 +1,10 @@
 import { TimeDisplayer } from "@client/components/common/index.ts";
-import { type Room } from "@shared/types.ts";
+import { useRoom } from "@client/providers/room-provider.tsx";
 
-type Props = {
-  room: Room;
-};
+const RoomInfo = () => {
+  const room = useRoom();
 
-const RoomInfo = (props: Props) => {
-  const { room } = props;
+  if (!room) return null;
 
   return (
     <div className="flex items-center justify-start space-x-6">

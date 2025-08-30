@@ -16,9 +16,11 @@ import { Server as IoServer, type Socket } from "socket.io";
 import { LOG_MESSAGES } from "./constants.ts";
 import roomsMap from "./database/rooms.ts";
 import {
-  connectedUsersMap,
   connectedUsersSet,
+  socketIdToSocket,
   updateConnectedUsersMap,
+  userIdToUser,
+  userToSocketBDM,
 } from "./database/users.ts";
 import { registerAddRoomRoute, registerLoginRoute } from "./routes/post.ts";
 
@@ -50,21 +52,21 @@ const ioServer = new IoServer<
 
 const createUsersDataPayload = (userIds?: UserData["id"][]): UserData[] => {
   if (!userIds) {
-    return Array.from(connectedUsersMap.keys()).sort(
+    return Array.from(userToSocketBDM.keys()).sort(
       (user1, user2) =>
         user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
     );
   }
 
-  const userIdsSet = new Set(userIds);
-
-  // optimize this!
-  return Array.from(connectedUsersMap.keys())
-    .filter(user => userIdsSet.has(user.id))
+  // handle undefined values.
+  const result = userIds
+    .map(userId => userIdToUser.get(userId)!)
     .sort(
       (user1, user2) =>
         user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
     );
+
+  return result;
 };
 
 const createRoomsPayload = (roomIds?: Room["id"][]): Room[] => {
@@ -74,19 +76,40 @@ const createRoomsPayload = (roomIds?: Room["id"][]): Room[] => {
     );
   }
 
-  const roomIdsSet = new Set(roomIds);
-
-  // optimize this
-  return Array.from(roomsMap.values())
-    .filter(room => roomIdsSet.has(room.id))
+  // handle undefined values.
+  const result = roomIds
+    .map(roomId => roomsMap.get(roomId)!)
     .sort(
       (room1, room2) => room1.name.charCodeAt(0) - room2.name.charCodeAt(0),
     );
+
+  return result;
+};
+
+const createRoomUsersDataPayload = (roomId: Room["id"]) => {
+  const allRooms = ioServer.of("/").adapter.rooms;
+
+  // handle undefined values.
+  const allConnectedSocketIds = allRooms.get(roomId)!;
+
+  // handle undefined values.
+  const allConnectedSockets = Array.from(allConnectedSocketIds.keys()).map(
+    socketId => socketIdToSocket.get(socketId)!,
+  );
+
+  const allConnectedUsers = allConnectedSockets
+    .map(socket => userToSocketBDM.getByValue(socket)!)
+    .sort(
+      (user1, user2) =>
+        user1.username.charCodeAt(0) - user2.username.charCodeAt(0),
+    );
+
+  return allConnectedUsers;
 };
 
 const makeHandleSocketLeavingRoom =
   (socket: Socket) => async (roomId: Room["id"]) => {
-    const userData = connectedUsersMap.getByValue(socket);
+    const userData = userToSocketBDM.getByValue(socket);
 
     if (!userData) return;
 
@@ -112,6 +135,9 @@ const makeHandleSocketLeavingRoom =
 
     ioServer.emit("users/refresh", createUsersDataPayload());
     ioServer.emit("rooms/refresh", createRoomsPayload());
+    ioServer
+      .in(roomId)
+      .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
 
     console.log(LOG_MESSAGES.USER_LEFT(userData.username, room.name));
   };
@@ -126,7 +152,9 @@ ioServer.on("connection", socket => {
       roomSummary: null,
     };
 
-    connectedUsersMap.set(userData, socket);
+    userToSocketBDM.set(userData, socket);
+    userIdToUser.set(userId, userData);
+    socketIdToSocket.set(socket.id, socket);
 
     const loweredUsername = username.toLowerCase();
 
@@ -147,10 +175,8 @@ ioServer.on("connection", socket => {
     sendRooms(createRoomsPayload(roomIds));
   });
 
-  socket.on("room/fetch", (roomId: Room["id"], sendRoom) => {
-    const room = roomsMap.get(roomId) ?? null;
-
-    sendRoom(room);
+  socket.on("rooms/users/fetch", (roomId, sendUsers) => {
+    sendUsers(createRoomUsersDataPayload(roomId));
   });
 
   socket.on(
@@ -178,7 +204,7 @@ ioServer.on("connection", socket => {
   );
 
   socket.on("room/join", async (roomId: Room["id"]) => {
-    const userData = connectedUsersMap.getByValue(socket);
+    const userData = userToSocketBDM.getByValue(socket);
 
     if (!userData) return;
 
@@ -195,8 +221,10 @@ ioServer.on("connection", socket => {
 
     room.connectedUsers.push(userData.id);
 
+    ioServer
+      .in(roomId)
+      .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
     socket.broadcast.emit("users/refresh", createUsersDataPayload());
-
     socket.broadcast.emit("rooms/refresh", createRoomsPayload());
 
     console.log(LOG_MESSAGES.USER_JOINED(userData.username, room.name));
@@ -205,7 +233,7 @@ ioServer.on("connection", socket => {
   socket.on("room/leave", makeHandleSocketLeavingRoom(socket));
 
   socket.on("disconnect", async reason => {
-    const user = connectedUsersMap.getByValue(socket);
+    const user = userToSocketBDM.getByValue(socket);
 
     if (!user) return;
 
@@ -218,7 +246,9 @@ ioServer.on("connection", socket => {
     }
 
     connectedUsersSet.delete(loweredUsername);
-    connectedUsersMap.deleteByValue(socket);
+    userToSocketBDM.deleteByValue(socket);
+    userIdToUser.delete(user.id);
+    socketIdToSocket.delete(socket.id);
 
     socket.broadcast.emit("users/refresh", createUsersDataPayload());
 

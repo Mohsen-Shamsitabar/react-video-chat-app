@@ -1,7 +1,7 @@
 import { Button } from "@client/components/ui/button.tsx";
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
+import { useRoom } from "@client/providers/room-provider.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { type Room } from "@shared/types.ts";
 import {
   EllipsisVerticalIcon,
   MicIcon,
@@ -15,12 +15,8 @@ import {
 import * as React from "react";
 import { useNavigate } from "react-router";
 
-type Props = {
-  room: Room;
-};
-
-const UserControls = (props: Props) => {
-  const { room } = props;
+const UserControls = () => {
+  const room = useRoom();
 
   const [isMicOn, setIsMicOn] = React.useState(false);
   const [isVideoOn, setIsVideoOn] = React.useState(false);
@@ -30,6 +26,7 @@ const UserControls = (props: Props) => {
 
   const navigate = useNavigate();
 
+  if (!room) return null;
   if (!socket) return null;
 
   const handleMicClick = () => {
@@ -81,6 +78,7 @@ const UserControls = (props: Props) => {
     <div className="flex justify-center items-center gap-x-2">
       <Button
         size="icon"
+        variant="default"
         onClick={handleMicClick}
       >
         {renderMicIcon()}
@@ -88,6 +86,7 @@ const UserControls = (props: Props) => {
 
       <Button
         size="icon"
+        variant="default"
         onClick={handleVideoClick}
       >
         {renderVideoIcon()}
@@ -95,6 +94,7 @@ const UserControls = (props: Props) => {
 
       <Button
         size="icon"
+        variant="default"
         onClick={handleScreenShareClick}
       >
         {renderScreenShareIcon()}
@@ -102,6 +102,7 @@ const UserControls = (props: Props) => {
 
       <Button
         size="icon"
+        variant="default"
         onClick={handleUserSettingsClick}
       >
         <EllipsisVerticalIcon className="size-fit" />
@@ -109,7 +110,8 @@ const UserControls = (props: Props) => {
 
       <Button
         size="icon"
-        className="bg-destructive hover:bg-red-500"
+        variant="destructive"
+        className="hover:bg-red-500!"
         onClick={handleLeaveRoomClick}
       >
         <PhoneOffIcon className="size-fit" />

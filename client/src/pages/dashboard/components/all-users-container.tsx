@@ -2,7 +2,7 @@ import { ScrollArea } from "@client/components/ui/scroll-area.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import { type UserData } from "@shared/types.ts";
 import * as React from "react";
-import UserCard from "./user-card.tsx";
+import { UserCard } from "../../../components/common/index.ts";
 
 const AllUsersContainer = () => {
   const { socket } = useSocket();
