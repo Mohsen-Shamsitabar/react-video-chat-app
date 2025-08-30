@@ -4,8 +4,7 @@ import { useLoginStatus } from "@client/lib/hooks.ts";
 import { cn } from "@client/lib/utils.ts";
 import * as React from "react";
 import { useLocation } from "react-router";
-import LogOutButton from "./logout-btn.tsx";
-import ThemeToggler from "./theme-toggler.tsx";
+import { LogOutButton, ThemeToggler } from "./index.ts";
 
 const Header = () => {
   const { pathname } = useLocation();

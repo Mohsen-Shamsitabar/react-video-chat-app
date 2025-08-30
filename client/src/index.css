@@ -29,7 +29,15 @@
   --header-height: 2rem;
   --main-height: calc(100dvh - var(--header-height));
 
+  --chatroom-footer-height: 4rem;
+  --chatroom-content-height: calc(
+    var(--main-height) - var(--chatroom-footer-height)
+  );
+
   --radius: 0.625rem;
+
+  --tab-content-transition-duration: 300ms;
+  --transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -156,4 +164,10 @@
 
 @utility main-container {
   @apply px-12;
+}
+
+@utility transition-size {
+  transition-property: width, height;
+  transition-duration: var(--tab-content-transition-duration);
+  transition-timing-function: var(--transition-timing-function);
 }

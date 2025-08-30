@@ -5,3 +5,10 @@ export const PAGE_ROUTES = {
   DASHBOARD: "/dashboard",
   CHATROOM: "/chatroom",
 } as const;
+
+export const CHATROOM_TAB_NAMES = {
+  DETAILS: "DETAILS",
+  USERS: "USERS",
+  CHAT: "CHAT",
+  HOST_CONTROLS: "HOST_CONTROLS",
+} as const;
