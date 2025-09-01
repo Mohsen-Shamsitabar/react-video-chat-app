@@ -10,7 +10,7 @@ const ContentHeader = (props: Props) => {
   const { handleTabContentOpen, title } = props;
 
   return (
-    <div className="flex items-center justify-between mb-4 overflow-hidden text-nowrap">
+    <div className="flex items-center justify-between overflow-hidden text-nowrap border-b-2 px-4 py-1">
       <span className="text-xl font-semibold">{title}</span>
 
       <Button
@@ -18,7 +18,7 @@ const ContentHeader = (props: Props) => {
         variant="ghost"
         onClick={handleTabContentOpen}
       >
-        <XIcon className="size-fit" />
+        <XIcon className="icon" />
       </Button>
     </div>
   );

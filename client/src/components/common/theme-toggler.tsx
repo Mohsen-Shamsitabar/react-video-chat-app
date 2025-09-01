@@ -5,7 +5,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@client/components/ui/dropdown-menu.tsx";
-import { cn } from "@client/lib/utils.ts";
 import { useTheme } from "@client/providers/theme-provider.tsx";
 import { Moon, Sun } from "lucide-react";
 
@@ -21,7 +20,7 @@ const ThemeToggler = (props: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn("", className)}
+        className={className}
         asChild
       >
         <Button

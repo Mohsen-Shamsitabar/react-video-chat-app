@@ -22,13 +22,13 @@ const DetailsContent = (props: Props) => {
   };
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col">
       <ContentHeader
         title="Room details"
         handleTabContentOpen={handleTabContentOpen}
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2 p-4">
         <p>Joining info</p>
 
         <p className="text-sm">{chatroomPathname}</p>

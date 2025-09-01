@@ -57,19 +57,19 @@ const UserControls = () => {
   };
 
   const renderMicIcon = () => {
-    if (isMicOn) return <MicIcon className="size-fit" />;
+    if (isMicOn) return <MicIcon className="icon" />;
 
     return <MicOffIcon className="size-fit stroke-destructive" />;
   };
 
   const renderVideoIcon = () => {
-    if (isVideoOn) return <VideoIcon className="size-fit" />;
+    if (isVideoOn) return <VideoIcon className="icon" />;
 
     return <VideoOffIcon className="size-fit stroke-destructive" />;
   };
 
   const renderScreenShareIcon = () => {
-    if (isScreenShareOn) return <ScreenShareIcon className="size-fit" />;
+    if (isScreenShareOn) return <ScreenShareIcon className="icon" />;
 
     return <ScreenShareOffIcon className="size-fit stroke-destructive" />;
   };
@@ -105,7 +105,7 @@ const UserControls = () => {
         variant="default"
         onClick={handleUserSettingsClick}
       >
-        <EllipsisVerticalIcon className="size-fit" />
+        <EllipsisVerticalIcon className="icon" />
       </Button>
 
       <Button
@@ -114,7 +114,7 @@ const UserControls = () => {
         className="hover:bg-red-500!"
         onClick={handleLeaveRoomClick}
       >
-        <PhoneOffIcon className="size-fit" />
+        <PhoneOffIcon className="icon" />
       </Button>
     </div>
   );

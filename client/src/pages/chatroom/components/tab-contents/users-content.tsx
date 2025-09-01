@@ -40,20 +40,20 @@ const UsersContent = (props: Props) => {
 
   const renderUsers = () => {
     return connectedUsers.map(user => (
-      <li key={user.id}>
+      <li key={user.username}>
         <UserCard {...user} />
       </li>
     ));
   };
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col">
       <ContentHeader
         title="Connected users"
         handleTabContentOpen={handleTabContentOpen}
       />
 
-      <ol>{renderUsers()}</ol>
+      <ol className="p-4">{renderUsers()}</ol>
     </div>
   );
 };

@@ -15,11 +15,17 @@ export type AddRoomResponseBody = {
 
 export type MessageId = `MSG_${string}`;
 export type RoomId = `ROOM_${string}`;
-export type UserId = `USER_${string}`;
+
+export type Message = {
+  id: MessageId;
+  from: "server" | (UserData["username"] & {});
+  to: RoomId;
+  content: string;
+};
 
 export type Room = NewRoomFormSchema & {
   id: RoomId;
-  connectedUsers: UserId[];
+  connectedUsers: UserData["username"][];
 };
 
 export type RoomSummary = {
@@ -28,14 +34,7 @@ export type RoomSummary = {
 };
 
 export type UserData = LoginFormSchema & {
-  id: UserId;
   roomSummary: RoomSummary | null;
-};
-
-export type Message = {
-  id: MessageId;
-  from: UserId;
-  context: string;
 };
 
 //======================< SOCKET >======================//
@@ -45,11 +44,12 @@ export type ServerToClientEvents = {
   "users/refresh": (users: UserData[]) => void;
   "rooms/refresh": (rooms: Room[]) => void;
   "rooms/users/refresh": (users: UserData[]) => void;
+  "room/message/send": (message: Message) => void;
 };
 
 export type ClientToServerEvents = {
   "users/fetch": (
-    userIds: UserData["id"][] | undefined,
+    usernames: UserData["username"][] | undefined,
     sendUsers: (users: UserData[]) => void,
   ) => void;
   "rooms/fetch": (
@@ -59,6 +59,10 @@ export type ClientToServerEvents = {
   "rooms/users/fetch": (
     roomId: Room["id"],
     sendUsers: (users: UserData[]) => void,
+  ) => void;
+  "room/messages/fetch": (
+    roomId: Room["id"],
+    sendMessages: (messages: Message[]) => void,
   ) => void;
 
   //==================
@@ -70,6 +74,7 @@ export type ClientToServerEvents = {
   ) => void;
   "room/join": (roomId: Room["id"]) => void;
   "room/leave": (roomId: Room["id"]) => void;
+  "message/send": (message: Message) => void;
 };
 
 // used for inter-server communication
@@ -79,5 +84,4 @@ export type InterServerEvents = {
 
 export type SocketData = {
   username: UserData["username"];
-  userId: UserData["id"];
 };
