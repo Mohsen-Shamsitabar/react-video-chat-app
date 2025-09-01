@@ -8,12 +8,13 @@ import {
   type SocketData,
   type UserData,
 } from "@shared/types.ts";
-import { generateRoomId } from "@shared/utils.ts";
+import { generateMessageId, generateRoomId } from "@shared/utils.ts";
 import cors from "cors";
 import express from "express";
 import http from "http";
 import { Server as IoServer, type Socket } from "socket.io";
 import { LOG_MESSAGES } from "./constants.ts";
+import { roomIdToMessages } from "./database/messages.ts";
 import roomsMap from "./database/rooms.ts";
 import {
   connectedUsersSet,
@@ -91,8 +92,9 @@ const createRoomsPayload = (roomIds?: Room["id"][]): Room[] => {
 const createRoomUsersDataPayload = (roomId: Room["id"]) => {
   const allRooms = ioServer.of("/").adapter.rooms;
 
-  // handle undefined values.
-  const allConnectedSocketIds = allRooms.get(roomId)!;
+  const allConnectedSocketIds = allRooms.get(roomId);
+
+  if (!allConnectedSocketIds) return [];
 
   // handle undefined values.
   const allConnectedSockets = Array.from(allConnectedSocketIds.keys()).map(
@@ -133,15 +135,22 @@ const makeHandleSocketLeavingRoom =
 
     if (room.connectedUsers.length <= 0) {
       roomsMap.delete(room.id);
+      roomIdToMessages.delete(room.id);
     }
 
+    ioServer.in(roomId).emit("room/message/send", {
+      id: generateMessageId(),
+      from: "server",
+      to: roomId,
+      content: `${updatedUserData.username} left`,
+    });
     ioServer.emit("users/refresh", createUsersDataPayload());
     ioServer.emit("rooms/refresh", createRoomsPayload());
     ioServer
       .in(roomId)
       .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
 
-    console.log(LOG_MESSAGES.USER_LEFT(userData.username, room.name));
+    console.log(LOG_MESSAGES.USER_LEFT(updatedUserData.username, room.name));
   };
 
 ioServer.on("connection", socket => {
@@ -178,6 +187,13 @@ ioServer.on("connection", socket => {
     sendUsers(createRoomUsersDataPayload(roomId));
   });
 
+  socket.on("room/messages/fetch", (roomId, sendMessages) => {
+    // handle undefined values
+    const messages = roomIdToMessages.get(roomId)!;
+
+    sendMessages(messages);
+  });
+
   socket.on(
     "room/add",
     (roomData: NewRoomFormSchema, sendRoomId: (roomId: Room["id"]) => void) => {
@@ -193,6 +209,8 @@ ioServer.on("connection", socket => {
       };
 
       roomsMap.set(roomId, room);
+
+      roomIdToMessages.set(roomId, []);
 
       sendRoomId(roomId);
 
@@ -220,6 +238,12 @@ ioServer.on("connection", socket => {
 
     room.connectedUsers.push(userData.username);
 
+    ioServer.in(roomId).emit("room/message/send", {
+      id: generateMessageId(),
+      from: "server",
+      to: roomId,
+      content: `${userData.username} joined`,
+    });
     ioServer
       .in(roomId)
       .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
@@ -230,6 +254,21 @@ ioServer.on("connection", socket => {
   });
 
   socket.on("room/leave", makeHandleSocketLeavingRoom(socket));
+
+  socket.on("message/send", message => {
+    const { to: roomId } = message;
+
+    // handle undefined values
+    const prevMessages = roomIdToMessages.get(roomId)!;
+
+    prevMessages.push(message);
+
+    const newMessages = [...prevMessages];
+
+    roomIdToMessages.set(roomId, newMessages);
+
+    ioServer.in(roomId).emit("room/message/send", message);
+  });
 
   socket.on("disconnect", async reason => {
     const user = userDataToSocketBDM.getByValue(socket);

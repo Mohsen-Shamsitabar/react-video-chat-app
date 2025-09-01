@@ -15,11 +15,10 @@ export type AddRoomResponseBody = {
 
 export type MessageId = `MSG_${string}`;
 export type RoomId = `ROOM_${string}`;
-export type ChatId = `CHAT_${string}`;
 
-export type ChatMessage = {
-  id: ChatId;
-  from: UserData["username"];
+export type Message = {
+  id: MessageId;
+  from: "server" | (UserData["username"] & {});
   to: RoomId;
   content: string;
 };
@@ -45,6 +44,7 @@ export type ServerToClientEvents = {
   "users/refresh": (users: UserData[]) => void;
   "rooms/refresh": (rooms: Room[]) => void;
   "rooms/users/refresh": (users: UserData[]) => void;
+  "room/message/send": (message: Message) => void;
 };
 
 export type ClientToServerEvents = {
@@ -60,6 +60,10 @@ export type ClientToServerEvents = {
     roomId: Room["id"],
     sendUsers: (users: UserData[]) => void,
   ) => void;
+  "room/messages/fetch": (
+    roomId: Room["id"],
+    sendMessages: (messages: Message[]) => void,
+  ) => void;
 
   //==================
 
@@ -70,6 +74,7 @@ export type ClientToServerEvents = {
   ) => void;
   "room/join": (roomId: Room["id"]) => void;
   "room/leave": (roomId: Room["id"]) => void;
+  "message/send": (message: Message) => void;
 };
 
 // used for inter-server communication
