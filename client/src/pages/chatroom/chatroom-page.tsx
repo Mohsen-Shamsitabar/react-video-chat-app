@@ -104,28 +104,28 @@ const ChatroomPage = () => {
               {/* ================== */}
 
               <TabsContent
-                className="border-l-2 bg-sidebar"
+                className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.DETAILS}
               >
                 <DetailsContent handleTabContentOpen={handleTabContentOpen} />
               </TabsContent>
 
               <TabsContent
-                className="border-l-2 bg-sidebar"
+                className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.USERS}
               >
                 <UsersContent handleTabContentOpen={handleTabContentOpen} />
               </TabsContent>
 
               <TabsContent
-                className="border-l-2 bg-sidebar"
+                className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.CHAT}
               >
                 <ChatContent handleTabContentOpen={handleTabContentOpen} />
               </TabsContent>
 
               <TabsContent
-                className="border-l-2 bg-sidebar"
+                className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.HOST_CONTROLS}
               >
                 <HostContent handleTabContentOpen={handleTabContentOpen} />

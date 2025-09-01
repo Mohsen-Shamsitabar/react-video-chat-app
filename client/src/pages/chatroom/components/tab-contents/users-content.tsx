@@ -47,13 +47,13 @@ const UsersContent = (props: Props) => {
   };
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col">
       <ContentHeader
         title="Connected users"
         handleTabContentOpen={handleTabContentOpen}
       />
 
-      <ol>{renderUsers()}</ol>
+      <ol className="p-4">{renderUsers()}</ol>
     </div>
   );
 };
