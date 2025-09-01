@@ -3,6 +3,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.app-override .app-override * {
+  all: unset; /* Reset browser and default styles */
+}
+
+/* .app-override .app-override [class] {
+} */
+
 :root {
   font-family:
     system-ui,
@@ -170,4 +177,8 @@
   transition-property: width, height;
   transition-duration: var(--tab-content-transition-duration);
   transition-timing-function: var(--transition-timing-function);
+}
+
+@utility icon {
+  @apply size-fit!;
 }

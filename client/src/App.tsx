@@ -10,7 +10,7 @@ import LoginPage from "./pages/login-page.tsx";
 
 const App = () => {
   return (
-    <>
+    <div className="app-override">
       <Header />
 
       <Toaster
@@ -43,7 +43,7 @@ const App = () => {
           element={<NotFoundPage />}
         />
       </Routes>
-    </>
+    </div>
   );
 };
 

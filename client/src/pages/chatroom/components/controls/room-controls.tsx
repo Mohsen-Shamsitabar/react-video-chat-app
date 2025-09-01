@@ -38,28 +38,28 @@ const RoomControls = (props: Props) => {
         onClick={() => handleTabClick(CHATROOM_TAB_NAMES.DETAILS)}
         size="icon"
       >
-        <CircleAlertIcon className="size-fit" />
+        <CircleAlertIcon className="icon" />
       </Button>
 
       <Button
         onClick={() => handleTabClick(CHATROOM_TAB_NAMES.USERS)}
         size="icon"
       >
-        <UsersIcon className="size-fit" />
+        <UsersIcon className="icon" />
       </Button>
 
       <Button
         onClick={() => handleTabClick(CHATROOM_TAB_NAMES.CHAT)}
         size="icon"
       >
-        <MessageCircleMoreIcon className="size-fit" />
+        <MessageCircleMoreIcon className="icon" />
       </Button>
 
       <Button
         onClick={() => handleTabClick(CHATROOM_TAB_NAMES.HOST_CONTROLS)}
         size="icon"
       >
-        <CogIcon className="size-fit" />
+        <CogIcon className="icon" />
       </Button>
     </div>
   );
