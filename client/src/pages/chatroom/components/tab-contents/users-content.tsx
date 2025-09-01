@@ -40,7 +40,7 @@ const UsersContent = (props: Props) => {
 
   const renderUsers = () => {
     return connectedUsers.map(user => (
-      <li key={user.id}>
+      <li key={user.username}>
         <UserCard {...user} />
       </li>
     ));

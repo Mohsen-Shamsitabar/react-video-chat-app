@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import type { MessageId, RoomId, UserId } from "./types.ts";
+import type { MessageId, RoomId } from "./types.ts";
 
 /**
  * **Both, `keys` and `values` must be unique**,
@@ -85,5 +85,4 @@ export class BiDirectionalMap<T, K> {
 }
 
 export const generateRoomId = (): RoomId => `ROOM_${nanoid()}`;
-export const generateUserId = (): UserId => `USER_${nanoid()}`;
 export const generateMessageId = (): MessageId => `MSG_${nanoid()}`;

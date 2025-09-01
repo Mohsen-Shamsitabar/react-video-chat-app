@@ -15,11 +15,18 @@ export type AddRoomResponseBody = {
 
 export type MessageId = `MSG_${string}`;
 export type RoomId = `ROOM_${string}`;
-export type UserId = `USER_${string}`;
+export type ChatId = `CHAT_${string}`;
+
+export type ChatMessage = {
+  id: ChatId;
+  from: UserData["username"];
+  to: RoomId;
+  content: string;
+};
 
 export type Room = NewRoomFormSchema & {
   id: RoomId;
-  connectedUsers: UserId[];
+  connectedUsers: UserData["username"][];
 };
 
 export type RoomSummary = {
@@ -28,14 +35,7 @@ export type RoomSummary = {
 };
 
 export type UserData = LoginFormSchema & {
-  id: UserId;
   roomSummary: RoomSummary | null;
-};
-
-export type Message = {
-  id: MessageId;
-  from: UserId;
-  context: string;
 };
 
 //======================< SOCKET >======================//
@@ -49,7 +49,7 @@ export type ServerToClientEvents = {
 
 export type ClientToServerEvents = {
   "users/fetch": (
-    userIds: UserData["id"][] | undefined,
+    usernames: UserData["username"][] | undefined,
     sendUsers: (users: UserData[]) => void,
   ) => void;
   "rooms/fetch": (
@@ -79,5 +79,4 @@ export type InterServerEvents = {
 
 export type SocketData = {
   username: UserData["username"];
-  userId: UserData["id"];
 };

@@ -1,11 +1,15 @@
-import type { UserId } from "@shared/types.ts";
+import type { UserData } from "@shared/types.ts";
 import { coloredText } from "./utils.ts";
 
 export const LOG_MESSAGES = {
-  SOCKET_CONNECT: (socketId: string, userId: UserId) =>
-    `Socket ${coloredText(socketId, "yellow")} with userId ${coloredText(userId, "yellow")} ${coloredText("connected", "green")}`,
-  SOCKET_DISCONNECT: (socketId: string, userId: UserId, reason: string) =>
-    `Socket ${coloredText(socketId, "yellow")} with userId ${coloredText(userId, "yellow")} ${coloredText("disconnected", "red")} reason: ${reason}.`,
+  SOCKET_CONNECT: (socketId: string, username: UserData["username"]) =>
+    `Socket ${coloredText(socketId, "yellow")} with username ${coloredText(username, "yellow")} ${coloredText("connected", "green")}`,
+  SOCKET_DISCONNECT: (
+    socketId: string,
+    username: UserData["username"],
+    reason: string,
+  ) =>
+    `Socket ${coloredText(socketId, "yellow")} with username ${coloredText(username, "yellow")} ${coloredText("disconnected", "red")} reason: ${reason}.`,
   ROOM_CREATED: (roomName: string) =>
     `Room ${coloredText(roomName, "gray")} ${coloredText("created", "green")}`,
   ROOM_DELETED: (roomName: string) =>
