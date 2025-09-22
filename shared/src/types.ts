@@ -35,6 +35,8 @@ export type RoomSummary = {
 
 export type UserData = LoginFormSchema & {
   roomSummary: RoomSummary | null;
+  socketId: string | null;
+  peerId: string | null;
 };
 
 //======================< SOCKET >======================//
@@ -43,6 +45,7 @@ export type ServerToClientEvents = {
   // withAck: (d: string, callback: (e: number) => void) => void;
   "users/refresh": (users: UserData[]) => void;
   "rooms/refresh": (rooms: Room[]) => void;
+  "room/refresh": (room: Room) => void;
   "rooms/users/refresh": (users: UserData[]) => void;
   "room/message/send": (message: Message) => void;
 };
@@ -75,6 +78,10 @@ export type ClientToServerEvents = {
   "room/join": (roomId: Room["id"]) => void;
   "room/leave": (roomId: Room["id"]) => void;
   "message/send": (message: Message) => void;
+
+  //==================
+
+  "peer/open": (peerId: string) => void;
 };
 
 // used for inter-server communication

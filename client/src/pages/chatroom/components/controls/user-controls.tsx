@@ -1,6 +1,4 @@
 import { Button } from "@client/components/ui/button.tsx";
-import { PAGE_ROUTES } from "@client/lib/constants.ts";
-import { useRoom } from "@client/providers/room-provider.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import {
   EllipsisVerticalIcon,
@@ -12,49 +10,38 @@ import {
   VideoIcon,
   VideoOffIcon,
 } from "lucide-react";
-import * as React from "react";
-import { useNavigate } from "react-router";
 
-const UserControls = () => {
-  const room = useRoom();
+type Props = {
+  isMicOn: boolean;
+  isVideoOn: boolean;
+  isScreenShareOn: boolean;
 
-  const [isMicOn, setIsMicOn] = React.useState(false);
-  const [isVideoOn, setIsVideoOn] = React.useState(false);
-  const [isScreenShareOn, setIsScreenShareOn] = React.useState(false);
+  handleMicClick: () => void;
+  handleVideoClick: () => void;
+  handleScreenShareClick: () => void;
+  handleLeaveRoomClick: () => void;
+};
+
+const UserControls = (props: Props) => {
+  const {
+    isMicOn,
+    isVideoOn,
+    isScreenShareOn,
+    handleMicClick,
+    handleVideoClick,
+    handleScreenShareClick,
+    handleLeaveRoomClick,
+  } = props;
 
   const { socket } = useSocket();
 
-  const navigate = useNavigate();
-
-  if (!room) return null;
   if (!socket) return null;
-
-  const handleMicClick = () => {
-    setIsMicOn(c => !c);
-
-    return;
-  };
-
-  const handleVideoClick = () => {
-    setIsVideoOn(c => !c);
-
-    return;
-  };
-
-  const handleScreenShareClick = () => {
-    setIsScreenShareOn(c => !c);
-
-    return;
-  };
 
   const handleUserSettingsClick = () => {
     return;
   };
 
-  const handleLeaveRoomClick = () => {
-    socket.emit("room/leave", room.id);
-    void navigate(PAGE_ROUTES.DASHBOARD);
-  };
+  //==========RENDER==========//
 
   const renderMicIcon = () => {
     if (isMicOn) return <MicIcon className="icon" />;

@@ -1,11 +1,13 @@
 import { PAGE_ROUTES } from "@client/lib/constants.ts";
 import { useLoginStatus } from "@client/lib/hooks.ts";
+import { usePeer } from "@client/providers/peer-provider.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
-import { NETWORK } from "@shared/constants.ts";
+import { NETWORK, PEER_PATH, SOCKET_PATH } from "@shared/constants.ts";
 import {
   type ClientToServerEvents,
   type ServerToClientEvents,
 } from "@shared/types.ts";
+import { Peer } from "peerjs";
 import * as React from "react";
 import { Outlet, useNavigate } from "react-router";
 import { io, type Socket } from "socket.io-client";
@@ -15,6 +17,8 @@ const AuthLayout = () => {
 
   const { socket, setSocket } = useSocket();
 
+  const { peer, setPeer } = usePeer();
+
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -23,28 +27,47 @@ const AuthLayout = () => {
       return;
     }
 
-    //=== SOCKET ===//
-
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+    const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
       NETWORK.SERVER_URL,
+      { path: SOCKET_PATH },
     );
 
-    socket.on("connect", () => {
+    newSocket.on("connect", () => {
       console.log(
-        `Socket '${socket.id}' with username '${username}' connected`,
+        `Socket '${newSocket.id}' with username '${username}' connected`,
       );
 
-      socket.emit("user/login", username);
+      newSocket.emit("user/login", username);
 
-      setSocket(socket);
+      setSocket(newSocket);
+    });
+
+    //==========================
+
+    const newPeer = new Peer({
+      host: new URL(NETWORK.SERVER_URL).hostname, // localhost
+      port: NETWORK.PEER_PORT,
+      path: PEER_PATH,
+    });
+
+    newPeer.on("open", peerId => {
+      console.log(`Peer '${peerId}' with username '${username}' connected`);
+
+      setPeer(newPeer);
+
+      if (!newSocket.connected) return;
+
+      newSocket.emit("peer/open", peerId);
     });
 
     return () => {
-      socket.off("connect");
+      newSocket.disconnect();
+      newPeer.destroy();
     };
   }, [isLogged]);
 
   if (!socket) return null;
+  if (!peer) return null;
 
   return (
     <>

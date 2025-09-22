@@ -1,4 +1,4 @@
-import { NETWORK } from "@shared/constants.ts";
+import { NETWORK, PEER_PATH, SOCKET_PATH } from "@shared/constants.ts";
 import { type NewRoomFormSchema } from "@shared/new-room-form-schema.ts";
 import {
   type ClientToServerEvents,
@@ -12,6 +12,7 @@ import { generateMessageId, generateRoomId } from "@shared/utils.ts";
 import cors from "cors";
 import express from "express";
 import http from "http";
+import { PeerServer } from "peer";
 import { Server as IoServer, type Socket } from "socket.io";
 import { LOG_MESSAGES } from "./constants.ts";
 import { roomIdToMessages } from "./database/messages.ts";
@@ -38,6 +39,15 @@ registerAddRoomRoute(expressApp);
 
 const httpServer = http.createServer(expressApp);
 
+//=== PEERJS ===//
+
+const peerServer = PeerServer({
+  port: NETWORK.PEER_PORT,
+  path: PEER_PATH,
+});
+
+// peerServer.on("connection", client => {});
+
 //=== SOCKET.IO ===//
 
 const ioServer = new IoServer<
@@ -49,6 +59,7 @@ const ioServer = new IoServer<
   cors: {
     origin: "*",
   },
+  path: SOCKET_PATH,
 });
 
 const createUsersDataPayload = (
@@ -149,6 +160,7 @@ const makeHandleSocketLeavingRoom =
     ioServer
       .in(roomId)
       .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
+    ioServer.in(roomId).emit("room/refresh", room);
 
     console.log(LOG_MESSAGES.USER_LEFT(updatedUserData.username, room.name));
   };
@@ -158,6 +170,8 @@ ioServer.on("connection", socket => {
     const userData: UserData = {
       username,
       roomSummary: null,
+      socketId: socket.id,
+      peerId: null,
     };
 
     userDataToSocketBDM.set(userData, socket);
@@ -173,6 +187,16 @@ ioServer.on("connection", socket => {
     ioServer.emit("users/refresh", createUsersDataPayload());
 
     console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id, username));
+  });
+
+  socket.on("peer/open", peerId => {
+    const userData = userDataToSocketBDM.getByValue(socket);
+
+    if (!userData) return;
+
+    const newUserData: UserData = { ...userData, peerId };
+
+    updateConnectedUsersMap(newUserData, socket);
   });
 
   socket.on("users/fetch", (usernames, sendUsers) => {
@@ -244,9 +268,12 @@ ioServer.on("connection", socket => {
       to: roomId,
       content: `${userData.username} joined`,
     });
+    // --- we could merge these 2 events
     ioServer
       .in(roomId)
       .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
+    ioServer.in(roomId).emit("room/refresh", room);
+    // ---
     socket.broadcast.emit("users/refresh", createUsersDataPayload());
     socket.broadcast.emit("rooms/refresh", createRoomsPayload());
 
@@ -298,6 +325,6 @@ ioServer.on("connection", socket => {
 
 //=================//
 
-httpServer.listen(NETWORK.SERVER_PORT, () => {
+httpServer.listen(NETWORK.SERVER_PORT, "0.0.0.0", () => {
   console.log(`Server running at ${NETWORK.SERVER_URL}`);
 });
