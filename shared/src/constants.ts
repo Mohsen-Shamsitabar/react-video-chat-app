@@ -1,17 +1,25 @@
 //=== == NETWORK == ===//
 
 const DOMAIN_NAME = "http://localhost";
-const IP_ADDRESS = "http://192.168.1.144";
+const IP_ADDRESS = "http://192.168.1.153";
 const SERVER_PORT = 3001;
 const CLIENT_PORT = 5173;
+
+const PEER_PORT = 9000;
+
+export const PEER_PATH = "/react-video-chat/peerjs";
+export const SOCKET_PATH = "/react-video-chat/socketio";
 
 export const NETWORK = {
   DOMAIN_NAME,
   IP_ADDRESS,
   SERVER_PORT,
   CLIENT_PORT,
-  SERVER_URL: `${DOMAIN_NAME}:${SERVER_PORT}`,
-  CLIENT_URL: `${DOMAIN_NAME}:${CLIENT_PORT}`,
+  PEER_PORT,
+  SERVER_URL: `${IP_ADDRESS}:${SERVER_PORT}`,
+  CLIENT_URL: `${IP_ADDRESS}:${CLIENT_PORT}`,
+  // SERVER_URL: `${DOMAIN_NAME}:${SERVER_PORT}`,
+  // CLIENT_URL: `${DOMAIN_NAME}:${CLIENT_PORT}`,
 } as const;
 
 export const API_ROUTES = {
