@@ -99,26 +99,35 @@ const ChatroomPage = () => {
   if (!room) return <NotFoundPage />;
 
   const handleMicClick = () => {
-    setIsMicOn(c => !c);
+    setIsMicOn(prev => {
+      const newVal = !prev;
 
-    if (!mediaStream) return;
+      if (mediaStream) {
+        const audioTracks = mediaStream.getAudioTracks();
 
-    mediaStream.getAudioTracks()[0]!.enabled =
-      !mediaStream.getAudioTracks()[0]!.enabled;
+        if (audioTracks.length > 0) {
+          audioTracks.forEach(track => {
+            track.enabled = newVal;
+          });
+        }
+      }
 
-    return;
+      return newVal;
+    });
   };
 
   const handleVideoClick = () => {
-    setIsVideoOn(!isVideoOn);
+    setIsVideoOn(prev => {
+      const newVal = !prev;
 
-    if (!mediaStream) return;
+      if (mediaStream) {
+        mediaStream.getVideoTracks().forEach(track => {
+          track.enabled = newVal;
+        });
+      }
 
-    mediaStream.getVideoTracks().forEach(track => {
-      track.enabled = !isVideoOn;
+      return newVal;
     });
-
-    return;
   };
 
   const handleScreenShareClick = () => {
