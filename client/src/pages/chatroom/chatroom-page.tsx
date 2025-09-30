@@ -55,19 +55,31 @@ const ChatroomPage = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    if (!mediaStream) {
+      void (async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
+        setMediaStream(stream);
+      })();
+
+      return;
+    }
+
+    return () => {
+      mediaStream.getTracks().forEach(track => track.stop());
+      setMediaStream(null);
+    };
+  }, [mediaStream]);
+
+  React.useEffect(() => {
     if (!socket) return;
     if (!roomId) {
       setRoom(null);
       return;
     }
-
-    void (async () => {
-      await navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          setMediaStream(stream);
-        });
-    })();
 
     void (async () => {
       const room = await socket.emitWithAck("rooms/fetch", [roomId]);
@@ -80,6 +92,10 @@ const ChatroomPage = () => {
 
       setConnectedUsersData(users);
     })();
+  }, []);
+
+  React.useEffect(() => {
+    if (!socket) return;
 
     socket.on("rooms/users/refresh", users => setConnectedUsersData(users));
     socket.on("room/refresh", room => setRoom(room));
@@ -87,10 +103,6 @@ const ChatroomPage = () => {
     return () => {
       socket.off("room/refresh");
       socket.off("rooms/users/refresh");
-
-      if (!mediaStream) return;
-      mediaStream.getTracks().forEach(track => track.stop());
-      setMediaStream(null);
     };
   }, []);
 

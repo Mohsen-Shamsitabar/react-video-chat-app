@@ -65,26 +65,26 @@ const VideoSection = (props: Props) => {
     if (!partnerMediaStream) return;
 
     partnerVideoRef.current.srcObject = partnerMediaStream;
-  }, [partnerMediaStream]);
+  }, [partnerMediaStream, isPartnerVideoMuted, isPartnerAudioMuted]);
 
   React.useEffect(() => {
     if (!peer) return;
     if (!socket) return;
 
-    if (connectedUsersData.length === 1) {
-      peer.on("connection", connection => setConnection(connection));
-      peer.on("call", call => {
-        call.answer(mediaStream);
+    peer.on("connection", connection => setConnection(connection));
+    peer.on("call", call => {
+      call.answer(mediaStream);
 
-        call.on("stream", stream => setPartnerMediaStream(stream));
-      });
-    } else if (connectedUsersData.length === 2) {
+      call.on("stream", stream => setPartnerMediaStream(stream));
+    });
+
+    if (connectedUsersData.length === 2) {
       if (!partnerUserData) return;
       if (!partnerUserData.peerId) return;
 
-      const newConnections = peer.connect(partnerUserData.peerId);
+      const newConnection = peer.connect(partnerUserData.peerId);
 
-      setConnection(newConnections);
+      setConnection(newConnection);
 
       const call = peer.call(partnerUserData.peerId, mediaStream);
 
@@ -94,6 +94,7 @@ const VideoSection = (props: Props) => {
     return () => {
       peer.off("connection");
       peer.off("call");
+      connection?.close();
     };
   }, [mediaStream]);
 
