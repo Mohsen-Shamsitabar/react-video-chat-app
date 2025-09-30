@@ -13,12 +13,12 @@ const AllUsersContainer = () => {
     if (!socket) return;
 
     void (async () => {
-      const users = await socket.emitWithAck("users/fetch", undefined);
+      const { users } = await socket.emitWithAck("users/fetch", {});
 
       setAllUsers(users);
     })();
 
-    socket.on("users/refresh", (users: UserData[]) => {
+    socket.on("users/refresh", ({ users }) => {
       setAllUsers(users);
     });
 

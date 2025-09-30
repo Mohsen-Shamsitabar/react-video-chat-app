@@ -1,6 +1,5 @@
 import { useActiveUser } from "@client/providers/active-user-provider.tsx";
 import { usePeer } from "@client/providers/peer-provider.tsx";
-import { useRoom } from "@client/providers/room-provider.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import { type UserData } from "@shared/types.ts";
 import { type DataConnection } from "peerjs";
@@ -30,7 +29,6 @@ const VideoSection = (props: Props) => {
 
   const { socket } = useSocket();
   const { peer } = usePeer();
-  const room = useRoom();
 
   const { username: activeUsername } = useActiveUser();
 

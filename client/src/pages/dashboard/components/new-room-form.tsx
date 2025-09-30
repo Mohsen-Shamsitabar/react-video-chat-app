@@ -44,9 +44,11 @@ const NewRoomForm = () => {
       return;
     }
 
-    const roomId = await socket.emitWithAck("room/add", formData);
+    const { roomId } = await socket.emitWithAck("room/add", {
+      roomFormData: formData,
+    });
 
-    socket.emit("room/join", roomId);
+    socket.emit("room/join", { roomId });
 
     clearErrors();
     void navigate(`${PAGE_ROUTES.CHATROOM}/${roomId}`);

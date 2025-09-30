@@ -13,12 +13,12 @@ const AllRoomsContainer = () => {
     if (!socket) return;
 
     void (async () => {
-      const rooms = await socket.emitWithAck("rooms/fetch", undefined);
+      const { rooms } = await socket.emitWithAck("rooms/fetch", {});
 
       setRooms(rooms);
     })();
 
-    socket.on("rooms/refresh", (rooms: Room[]) => setRooms(rooms));
+    socket.on("rooms/refresh", ({ rooms }) => setRooms(rooms));
 
     return () => {
       socket.off("rooms/refresh");

@@ -82,13 +82,17 @@ const ChatroomPage = () => {
     }
 
     void (async () => {
-      const room = await socket.emitWithAck("rooms/fetch", [roomId]);
+      const { rooms } = await socket.emitWithAck("rooms/fetch", {
+        roomIds: [roomId],
+      });
 
-      setRoom(room[0]);
+      setRoom(rooms[0]);
     })();
 
     void (async () => {
-      const users = await socket.emitWithAck("rooms/users/fetch", roomId);
+      const { users } = await socket.emitWithAck("rooms/users/fetch", {
+        roomId,
+      });
 
       setConnectedUsersData(users);
     })();
@@ -97,8 +101,10 @@ const ChatroomPage = () => {
   React.useEffect(() => {
     if (!socket) return;
 
-    socket.on("rooms/users/refresh", users => setConnectedUsersData(users));
-    socket.on("room/refresh", room => setRoom(room));
+    socket.on("rooms/users/refresh", ({ users }) =>
+      setConnectedUsersData(users),
+    );
+    socket.on("room/refresh", ({ room }) => setRoom(room));
 
     return () => {
       socket.off("room/refresh");
@@ -149,7 +155,7 @@ const ChatroomPage = () => {
   };
 
   const handleLeaveRoomClick = () => {
-    socket.emit("room/leave", room.id);
+    socket.emit("room/leave", { roomId: room.id });
     void navigate(PAGE_ROUTES.DASHBOARD);
   };
 

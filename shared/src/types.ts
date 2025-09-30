@@ -43,45 +43,45 @@ export type UserData = LoginFormSchema & {
 
 export type ServerToClientEvents = {
   // withAck: (d: string, callback: (e: number) => void) => void;
-  "users/refresh": (users: UserData[]) => void;
-  "rooms/refresh": (rooms: Room[]) => void;
-  "room/refresh": (room: Room) => void;
-  "rooms/users/refresh": (users: UserData[]) => void;
-  "room/message/send": (message: Message) => void;
+  "users/refresh": (opts: { users: UserData[] }) => void;
+  "rooms/refresh": (opts: { rooms: Room[] }) => void;
+  "room/refresh": (opts: { room: Room }) => void;
+  "rooms/users/refresh": (opts: { users: UserData[] }) => void;
+  "room/message/send": (opts: { message: Message }) => void;
 };
 
 export type ClientToServerEvents = {
   "users/fetch": (
-    usernames: UserData["username"][] | undefined,
-    sendUsers: (users: UserData[]) => void,
+    opts: { usernames?: UserData["username"][] },
+    sendUsers: (res: { users: UserData[] }) => void,
   ) => void;
   "rooms/fetch": (
-    roomIds: Room["id"][] | undefined,
-    sendRooms: (rooms: Room[]) => void,
+    opts: { roomIds?: Room["id"][] },
+    sendRooms: (res: { rooms: Room[] }) => void,
   ) => void;
   "rooms/users/fetch": (
-    roomId: Room["id"],
-    sendUsers: (users: UserData[]) => void,
+    opts: { roomId: Room["id"] },
+    sendUsers: (res: { users: UserData[] }) => void,
   ) => void;
   "room/messages/fetch": (
-    roomId: Room["id"],
-    sendMessages: (messages: Message[]) => void,
+    opts: { roomId: Room["id"] },
+    sendMessages: (res: { messages: Message[] }) => void,
   ) => void;
 
   //==================
 
-  "user/login": (username: UserData["username"]) => void;
+  "user/login": (opts: { username: UserData["username"] }) => void;
   "room/add": (
-    roomFormData: NewRoomFormSchema,
-    sendRoomId: (roomId: Room["id"]) => void,
+    opts: { roomFormData: NewRoomFormSchema },
+    sendRoomId: (res: { roomId: Room["id"] }) => void,
   ) => void;
-  "room/join": (roomId: Room["id"]) => void;
-  "room/leave": (roomId: Room["id"]) => void;
-  "message/send": (message: Message) => void;
+  "room/join": (opts: { roomId: Room["id"] }) => void;
+  "room/leave": (opts: { roomId: Room["id"] }) => void;
+  "message/send": (opts: { message: Message }) => void;
 
   //==================
 
-  "peer/open": (peerId: string) => void;
+  "peer/open": (opts: { peerId: string }) => void;
 };
 
 // used for inter-server communication

@@ -74,15 +74,17 @@ const ChatContentMessages = () => {
     if (!room) return;
 
     void (async () => {
-      const fetchedMessages = await socket.emitWithAck(
+      const { messages: fetchedMessages } = await socket.emitWithAck(
         "room/messages/fetch",
-        room.id,
+        {
+          roomId: room.id,
+        },
       );
 
       setMessages(fetchedMessages);
     })();
 
-    socket.on("room/message/send", message =>
+    socket.on("room/message/send", ({ message }) =>
       setMessages(c => [...c, message]),
     );
 
@@ -159,7 +161,7 @@ const ChatContentInput = () => {
       content: filteredText,
     };
 
-    socket.emit("message/send", message);
+    socket.emit("message/send", { message });
     setText("");
   };
 
