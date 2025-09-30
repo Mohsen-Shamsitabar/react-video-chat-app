@@ -47,8 +47,8 @@ const ChatroomPage = () => {
     UserData[]
   >([]);
 
-  const tabContentElementRef = React.useRef<null | HTMLDivElement>(null);
-  const isTabContentOpenRef = React.useRef<boolean>(false);
+  const [isTabContentOpen, setIsTabContentOpen] =
+    React.useState<boolean>(false);
 
   const { socket } = useSocket();
 
@@ -132,29 +132,22 @@ const ChatroomPage = () => {
     void navigate(PAGE_ROUTES.DASHBOARD);
   };
 
-  // This might need fixin
-  const handleTabContentOpen = () => {
-    const { current: tabContentElement } = tabContentElementRef;
-
-    if (!tabContentElement) return;
-
-    if (!isTabContentOpenRef.current) {
-      tabContentElement.style.width = "360px";
-      isTabContentOpenRef.current = !isTabContentOpenRef.current;
-
-      return;
-    }
-
-    tabContentElement.style.width = "0px";
-    isTabContentOpenRef.current = !isTabContentOpenRef.current;
-  };
-
   return (
     <main className={MAIN_HEIGHT}>
       <RoomProvider room={room}>
         <div className="size-full flex flex-col overflow-hidden">
-          <section className={cn(CHATROOM_CONTENT_HEIGHT, "flex size-full")}>
-            <div className="h-full w-full transition-size">
+          <section
+            className={cn(
+              CHATROOM_CONTENT_HEIGHT,
+              "flex! size-full! relative! overflow-hidden!",
+            )}
+          >
+            <div
+              className={cn(
+                "size-full bg-red-900 transition-margin",
+                isTabContentOpen ? "mr-80" : "mr-0",
+              )}
+            >
               <VideoSection
                 isMicOn={isMicOn}
                 isVideoOn={isVideoOn}
@@ -165,9 +158,10 @@ const ChatroomPage = () => {
             </div>
 
             <Tabs
-              ref={tabContentElementRef}
-              className={"h-full shrink-0 transition-size"}
-              style={{ width: "0px" }}
+              className={cn(
+                "h-full absolute! top-0 right-0! w-80 bg-blue-700 transition-transform z-[1000]!",
+                isTabContentOpen ? "translate-x-0" : "translate-x-full",
+              )}
               value={tabValue}
               onValueChange={setTabValue}
             >
@@ -189,7 +183,7 @@ const ChatroomPage = () => {
                 className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.DETAILS}
               >
-                <DetailsContent handleTabContentOpen={handleTabContentOpen} />
+                <DetailsContent setIsTabContentOpen={setIsTabContentOpen} />
               </TabsContent>
 
               <TabsContent
@@ -198,7 +192,7 @@ const ChatroomPage = () => {
               >
                 <UsersContent
                   connectedUsersData={connectedUsersData}
-                  handleTabContentOpen={handleTabContentOpen}
+                  setIsTabContentOpen={setIsTabContentOpen}
                 />
               </TabsContent>
 
@@ -206,14 +200,14 @@ const ChatroomPage = () => {
                 className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.CHAT}
               >
-                <ChatContent handleTabContentOpen={handleTabContentOpen} />
+                <ChatContent setIsTabContentOpen={setIsTabContentOpen} />
               </TabsContent>
 
               <TabsContent
                 className="border-l-2 bg-sidebar overflow-hidden"
                 value={CHATROOM_TAB_NAMES.HOST_CONTROLS}
               >
-                <HostContent handleTabContentOpen={handleTabContentOpen} />
+                <HostContent setIsTabContentOpen={setIsTabContentOpen} />
               </TabsContent>
             </Tabs>
           </section>
@@ -242,8 +236,8 @@ const ChatroomPage = () => {
 
             <div className="w-1/3">
               <RoomControls
-                isTabContentOpenRef={isTabContentOpenRef}
-                handleTabContentOpen={handleTabContentOpen}
+                isTabContentOpen={isTabContentOpen}
+                setIsTabContentOpen={setIsTabContentOpen}
                 setTabValue={setTabValue}
                 tabValue={tabValue}
               />

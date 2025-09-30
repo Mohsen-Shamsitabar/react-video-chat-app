@@ -9,26 +9,26 @@ import {
 } from "lucide-react";
 
 type Props = {
-  handleTabContentOpen: () => void;
-  isTabContentOpenRef: React.RefObject<boolean>;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isTabContentOpen: boolean;
   tabValue: ChatroomTabNames;
   setTabValue: React.Dispatch<React.SetStateAction<ChatroomTabNames>>;
 };
 
 const RoomControls = (props: Props) => {
-  const { handleTabContentOpen, isTabContentOpenRef, setTabValue, tabValue } =
+  const { setIsTabContentOpen, isTabContentOpen, setTabValue, tabValue } =
     props;
 
   const handleTabClick = (targetTab: ChatroomTabNames) => {
     if (tabValue === targetTab) {
-      handleTabContentOpen();
+      setIsTabContentOpen(c => !c);
       return;
     }
 
     setTabValue(targetTab);
 
-    if (!isTabContentOpenRef.current) {
-      handleTabContentOpen();
+    if (!isTabContentOpen) {
+      setIsTabContentOpen(c => !c);
     }
   };
 

@@ -142,7 +142,7 @@ const VideoSection = (props: Props) => {
   };
 
   return (
-    <div className="size-full bg-red-900">
+    <div className="size-full">
       <div className="grid grid-cols-2 gap-4 w-full max-w-4xl">
         {renderSelfVideo()}
 

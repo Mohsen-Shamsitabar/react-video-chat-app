@@ -184,17 +184,17 @@ const ChatContentInput = () => {
 };
 
 type ChatContentProps = {
-  handleTabContentOpen: () => void;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const ChatContent = (props: ChatContentProps) => {
-  const { handleTabContentOpen } = props;
+  const { setIsTabContentOpen } = props;
 
   return (
     <div className="size-full flex flex-col">
       <ContentHeader
         title="Room messages"
-        handleTabContentOpen={handleTabContentOpen}
+        setIsTabContentOpen={setIsTabContentOpen}
       />
 
       <ChatContentMessages />

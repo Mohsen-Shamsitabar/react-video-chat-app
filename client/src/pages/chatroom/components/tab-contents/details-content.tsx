@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import ContentHeader from "./content-header.tsx";
 
 type Props = {
-  handleTabContentOpen: () => void;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const DetailsContent = (props: Props) => {
-  const { handleTabContentOpen } = props;
+  const { setIsTabContentOpen } = props;
 
   const location = useLocation();
 
@@ -25,7 +25,7 @@ const DetailsContent = (props: Props) => {
     <div className="flex flex-col">
       <ContentHeader
         title="Room details"
-        handleTabContentOpen={handleTabContentOpen}
+        setIsTabContentOpen={setIsTabContentOpen}
       />
 
       <div className="space-y-2 p-4">
