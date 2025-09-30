@@ -29,12 +29,11 @@ const RoomCard = (props: Props) => {
     if (!socket) return;
 
     void (async () => {
-      const usersData = await socket.emitWithAck(
-        "users/fetch",
-        room.connectedUsers,
-      );
+      const { users } = await socket.emitWithAck("users/fetch", {
+        usernames: room.connectedUsers,
+      });
 
-      setConnectedUsersData(usersData);
+      setConnectedUsersData(users);
     })();
   }, [room.connectedUsers]);
 
@@ -54,7 +53,7 @@ const RoomCard = (props: Props) => {
     // we MUST also handle this on server!
     if (isRoomFull) return;
 
-    socket.emit("room/join", room.id);
+    socket.emit("room/join", { roomId: room.id });
     void navigate(`${PAGE_ROUTES.CHATROOM}/${room.id}`);
   };
 

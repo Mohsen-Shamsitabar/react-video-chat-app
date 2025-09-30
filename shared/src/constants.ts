@@ -1,7 +1,7 @@
 //=== == NETWORK == ===//
 
 const DOMAIN_NAME = "http://localhost";
-const IP_ADDRESS = "http://192.168.1.153";
+const IP_ADDRESS = "http://192.168.133.133";
 const SERVER_PORT = 3001;
 const CLIENT_PORT = 5173;
 
@@ -16,10 +16,10 @@ export const NETWORK = {
   SERVER_PORT,
   CLIENT_PORT,
   PEER_PORT,
-  SERVER_URL: `${IP_ADDRESS}:${SERVER_PORT}`,
-  CLIENT_URL: `${IP_ADDRESS}:${CLIENT_PORT}`,
-  // SERVER_URL: `${DOMAIN_NAME}:${SERVER_PORT}`,
-  // CLIENT_URL: `${DOMAIN_NAME}:${CLIENT_PORT}`,
+  // SERVER_URL: `${IP_ADDRESS}:${SERVER_PORT}`,
+  // CLIENT_URL: `${IP_ADDRESS}:${CLIENT_PORT}`,
+  SERVER_URL: `${DOMAIN_NAME}:${SERVER_PORT}`,
+  CLIENT_URL: `${DOMAIN_NAME}:${CLIENT_PORT}`,
 } as const;
 
 export const API_ROUTES = {

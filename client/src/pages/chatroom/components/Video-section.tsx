@@ -1,10 +1,14 @@
 import { useActiveUser } from "@client/providers/active-user-provider.tsx";
 import { usePeer } from "@client/providers/peer-provider.tsx";
-import { useRoom } from "@client/providers/room-provider.tsx";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import { type UserData } from "@shared/types.ts";
 import { type DataConnection } from "peerjs";
 import * as React from "react";
+
+type ConnectionData = {
+  type: "toggle-audio" | "toggle-video";
+  state: boolean;
+};
 
 type Props = {
   isMicOn: boolean;
@@ -25,7 +29,6 @@ const VideoSection = (props: Props) => {
 
   const { socket } = useSocket();
   const { peer } = usePeer();
-  const room = useRoom();
 
   const { username: activeUsername } = useActiveUser();
 
@@ -35,6 +38,9 @@ const VideoSection = (props: Props) => {
 
   const [partnerMediaStream, setPartnerMediaStream] =
     React.useState<null | MediaStream>(null);
+
+  const [isPartnerVideoMuted, setIsPartnerVideoMuted] = React.useState(false);
+  const [isPartnerAudioMuted, setIsPartnerAudioMuted] = React.useState(false);
 
   const myVideoRef = React.useRef<HTMLVideoElement>(null);
   const partnerVideoRef = React.useRef<HTMLVideoElement>(null);
@@ -54,28 +60,29 @@ const VideoSection = (props: Props) => {
 
   React.useEffect(() => {
     if (!partnerVideoRef.current) return;
+    if (!partnerMediaStream) return;
 
     partnerVideoRef.current.srcObject = partnerMediaStream;
-  }, [partnerMediaStream]);
+  }, [partnerMediaStream, isPartnerVideoMuted, isPartnerAudioMuted]);
 
   React.useEffect(() => {
     if (!peer) return;
     if (!socket) return;
 
-    if (connectedUsersData.length === 1) {
-      peer.on("connection", connection => setConnection(connection));
-      peer.on("call", call => {
-        call.answer(mediaStream);
+    peer.on("connection", connection => setConnection(connection));
+    peer.on("call", call => {
+      call.answer(mediaStream);
 
-        call.on("stream", stream => setPartnerMediaStream(stream));
-      });
-    } else if (connectedUsersData.length === 2) {
+      call.on("stream", stream => setPartnerMediaStream(stream));
+    });
+
+    if (connectedUsersData.length === 2) {
       if (!partnerUserData) return;
       if (!partnerUserData.peerId) return;
 
-      const newConnections = peer.connect(partnerUserData.peerId);
+      const newConnection = peer.connect(partnerUserData.peerId);
 
-      setConnection(newConnections);
+      setConnection(newConnection);
 
       const call = peer.call(partnerUserData.peerId, mediaStream);
 
@@ -85,8 +92,53 @@ const VideoSection = (props: Props) => {
     return () => {
       peer.off("connection");
       peer.off("call");
+      connection?.close();
     };
-  }, []);
+  }, [mediaStream]);
+
+  React.useEffect(() => {
+    if (!connection) return;
+
+    void (async () => {
+      const micData: ConnectionData = {
+        type: "toggle-audio",
+        state: !isMicOn,
+      };
+
+      await connection.send(micData);
+    })();
+  }, [isMicOn, connection]);
+
+  React.useEffect(() => {
+    if (!connection) return;
+
+    void (async () => {
+      const videoData: ConnectionData = {
+        type: "toggle-video",
+        state: !isVideoOn,
+      };
+
+      await connection.send(videoData);
+    })();
+  }, [isVideoOn, connection]);
+
+  React.useEffect(() => {
+    if (!connection) return;
+
+    const handleData = (data: ConnectionData) => {
+      if (data.type === "toggle-audio") {
+        setIsPartnerAudioMuted(data.state);
+      } else if (data.type === "toggle-video") {
+        setIsPartnerVideoMuted(data.state);
+      }
+    };
+
+    connection.on("data", handleData as () => void);
+
+    return () => {
+      connection.off("data", handleData as () => void);
+    };
+  }, [connection]);
 
   if (!peer) return null;
   if (!socket) return null;
@@ -112,11 +164,17 @@ const VideoSection = (props: Props) => {
             Camera Off
           </div>
         )}
+
+        {!isMicOn && (
+          <p className="absolute bottom-2 right-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+            Mic Off
+          </p>
+        )}
       </div>
     );
   };
 
-  const renderPartnetVideo = () => {
+  const renderPartnerVideo = () => {
     if (!partnerUserData) return null;
 
     return (
@@ -132,21 +190,27 @@ const VideoSection = (props: Props) => {
           {partnerUserData.username}
         </p>
 
-        {/* {!isCalling && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-white text-lg">
-              Waiting for participant...
-            </div>
-          )} */}
+        {isPartnerVideoMuted && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-white text-lg">
+            Camera Off
+          </div>
+        )}
+
+        {isPartnerAudioMuted && (
+          <p className="absolute bottom-2 right-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+            Mic Off
+          </p>
+        )}
       </div>
     );
   };
 
   return (
-    <div className="size-full bg-red-900">
+    <div className="size-full">
       <div className="grid grid-cols-2 gap-4 w-full max-w-4xl">
         {renderSelfVideo()}
 
-        {renderPartnetVideo()}
+        {renderPartnerVideo()}
       </div>
     </div>
   );

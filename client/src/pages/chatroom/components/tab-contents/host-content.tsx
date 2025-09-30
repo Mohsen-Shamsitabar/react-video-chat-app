@@ -1,17 +1,17 @@
 import ContentHeader from "./content-header.tsx";
 
 type Props = {
-  handleTabContentOpen: () => void;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const HostContent = (props: Props) => {
-  const { handleTabContentOpen } = props;
+  const { setIsTabContentOpen } = props;
 
   return (
     <div className="flex flex-col">
       <ContentHeader
         title="Host controls"
-        handleTabContentOpen={handleTabContentOpen}
+        setIsTabContentOpen={setIsTabContentOpen}
       />
 
       <div className="px-4">

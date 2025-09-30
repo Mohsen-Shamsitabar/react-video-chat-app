@@ -37,7 +37,7 @@ const AuthLayout = () => {
         `Socket '${newSocket.id}' with username '${username}' connected`,
       );
 
-      newSocket.emit("user/login", username);
+      newSocket.emit("user/login", { username });
 
       setSocket(newSocket);
     });
@@ -57,7 +57,7 @@ const AuthLayout = () => {
 
       if (!newSocket.connected) return;
 
-      newSocket.emit("peer/open", peerId);
+      newSocket.emit("peer/open", { peerId });
     });
 
     return () => {

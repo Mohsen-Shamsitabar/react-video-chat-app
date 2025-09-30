@@ -1,5 +1,4 @@
 import { NETWORK, PEER_PATH, SOCKET_PATH } from "@shared/constants.ts";
-import { type NewRoomFormSchema } from "@shared/new-room-form-schema.ts";
 import {
   type ClientToServerEvents,
   type InterServerEvents,
@@ -41,12 +40,10 @@ const httpServer = http.createServer(expressApp);
 
 //=== PEERJS ===//
 
-const peerServer = PeerServer({
+const _peerServer = PeerServer({
   port: NETWORK.PEER_PORT,
   path: PEER_PATH,
 });
-
-// peerServer.on("connection", client => {});
 
 //=== SOCKET.IO ===//
 
@@ -123,7 +120,9 @@ const createRoomUsersDataPayload = (roomId: Room["id"]) => {
 };
 
 const makeHandleSocketLeavingRoom =
-  (socket: Socket) => async (roomId: Room["id"]) => {
+  (socket: Socket) => async (opts: { roomId: Room["id"] }) => {
+    const { roomId } = opts;
+
     const userData = userDataToSocketBDM.getByValue(socket);
 
     if (!userData) return;
@@ -150,23 +149,25 @@ const makeHandleSocketLeavingRoom =
     }
 
     ioServer.in(roomId).emit("room/message/send", {
-      id: generateMessageId(),
-      from: "server",
-      to: roomId,
-      content: `${updatedUserData.username} left`,
+      message: {
+        id: generateMessageId(),
+        from: "server",
+        to: roomId,
+        content: `${updatedUserData.username} left`,
+      },
     });
-    ioServer.emit("users/refresh", createUsersDataPayload());
-    ioServer.emit("rooms/refresh", createRoomsPayload());
-    ioServer
-      .in(roomId)
-      .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
-    ioServer.in(roomId).emit("room/refresh", room);
+    ioServer.emit("users/refresh", { users: createUsersDataPayload() });
+    ioServer.emit("rooms/refresh", { rooms: createRoomsPayload() });
+    ioServer.in(roomId).emit("rooms/users/refresh", {
+      users: createRoomUsersDataPayload(roomId),
+    });
+    ioServer.in(roomId).emit("room/refresh", { room });
 
     console.log(LOG_MESSAGES.USER_LEFT(updatedUserData.username, room.name));
   };
 
 ioServer.on("connection", socket => {
-  socket.on("user/login", async (username: UserData["username"]) => {
+  socket.on("user/login", async ({ username }) => {
     const userData: UserData = {
       username,
       roomSummary: null,
@@ -184,12 +185,12 @@ ioServer.on("connection", socket => {
 
     await socket.join(socket.id);
 
-    ioServer.emit("users/refresh", createUsersDataPayload());
+    ioServer.emit("users/refresh", { users: createUsersDataPayload() });
 
     console.log(LOG_MESSAGES.SOCKET_CONNECT(socket.id, username));
   });
 
-  socket.on("peer/open", peerId => {
+  socket.on("peer/open", ({ peerId }) => {
     const userData = userDataToSocketBDM.getByValue(socket);
 
     if (!userData) return;
@@ -199,52 +200,57 @@ ioServer.on("connection", socket => {
     updateConnectedUsersMap(newUserData, socket);
   });
 
-  socket.on("users/fetch", (usernames, sendUsers) => {
-    sendUsers(createUsersDataPayload(usernames));
+  socket.on("users/fetch", ({ usernames }, sendUsers) => {
+    const response = { users: createUsersDataPayload(usernames) };
+
+    sendUsers(response);
   });
 
-  socket.on("rooms/fetch", (roomIds, sendRooms) => {
-    sendRooms(createRoomsPayload(roomIds));
+  socket.on("rooms/fetch", ({ roomIds }, sendRooms) => {
+    const response = { rooms: createRoomsPayload(roomIds) };
+
+    sendRooms(response);
   });
 
-  socket.on("rooms/users/fetch", (roomId, sendUsers) => {
-    sendUsers(createRoomUsersDataPayload(roomId));
+  socket.on("rooms/users/fetch", ({ roomId }, sendUsers) => {
+    const response = { users: createRoomUsersDataPayload(roomId) };
+
+    sendUsers(response);
   });
 
-  socket.on("room/messages/fetch", (roomId, sendMessages) => {
+  socket.on("room/messages/fetch", ({ roomId }, sendMessages) => {
     // handle undefined values
     const messages = roomIdToMessages.get(roomId)!;
 
-    sendMessages(messages);
+    const response = { messages };
+
+    sendMessages(response);
   });
 
-  socket.on(
-    "room/add",
-    (roomData: NewRoomFormSchema, sendRoomId: (roomId: Room["id"]) => void) => {
-      const { name, size } = roomData;
+  socket.on("room/add", ({ roomFormData }, sendRoomId) => {
+    const { name, size } = roomFormData;
 
-      const roomId = generateRoomId();
+    const roomId = generateRoomId();
 
-      const room: Room = {
-        id: roomId,
-        name,
-        size,
-        connectedUsers: [],
-      };
+    const room: Room = {
+      id: roomId,
+      name,
+      size,
+      connectedUsers: [],
+    };
 
-      roomsMap.set(roomId, room);
+    roomsMap.set(roomId, room);
 
-      roomIdToMessages.set(roomId, []);
+    roomIdToMessages.set(roomId, []);
 
-      sendRoomId(roomId);
+    sendRoomId({ roomId });
 
-      ioServer.emit("rooms/refresh", createRoomsPayload());
+    ioServer.emit("rooms/refresh", { rooms: createRoomsPayload() });
 
-      console.log(LOG_MESSAGES.ROOM_CREATED(name));
-    },
-  );
+    console.log(LOG_MESSAGES.ROOM_CREATED(name));
+  });
 
-  socket.on("room/join", async (roomId: Room["id"]) => {
+  socket.on("room/join", async ({ roomId }) => {
     const userData = userDataToSocketBDM.getByValue(socket);
 
     if (!userData) return;
@@ -263,26 +269,28 @@ ioServer.on("connection", socket => {
     room.connectedUsers.push(userData.username);
 
     ioServer.in(roomId).emit("room/message/send", {
-      id: generateMessageId(),
-      from: "server",
-      to: roomId,
-      content: `${userData.username} joined`,
+      message: {
+        id: generateMessageId(),
+        from: "server",
+        to: roomId,
+        content: `${userData.username} joined`,
+      },
     });
     // --- we could merge these 2 events
-    ioServer
-      .in(roomId)
-      .emit("rooms/users/refresh", createRoomUsersDataPayload(roomId));
-    ioServer.in(roomId).emit("room/refresh", room);
+    ioServer.in(roomId).emit("rooms/users/refresh", {
+      users: createRoomUsersDataPayload(roomId),
+    });
+    ioServer.in(roomId).emit("room/refresh", { room });
     // ---
-    socket.broadcast.emit("users/refresh", createUsersDataPayload());
-    socket.broadcast.emit("rooms/refresh", createRoomsPayload());
+    socket.broadcast.emit("users/refresh", { users: createUsersDataPayload() });
+    socket.broadcast.emit("rooms/refresh", { rooms: createRoomsPayload() });
 
     console.log(LOG_MESSAGES.USER_JOINED(userData.username, room.name));
   });
 
   socket.on("room/leave", makeHandleSocketLeavingRoom(socket));
 
-  socket.on("message/send", message => {
+  socket.on("message/send", ({ message }) => {
     const { to: roomId } = message;
 
     // handle undefined values
@@ -294,7 +302,7 @@ ioServer.on("connection", socket => {
 
     roomIdToMessages.set(roomId, newMessages);
 
-    ioServer.in(roomId).emit("room/message/send", message);
+    ioServer.in(roomId).emit("room/message/send", { message });
   });
 
   socket.on("disconnect", async reason => {
@@ -307,7 +315,9 @@ ioServer.on("connection", socket => {
     const loweredUsername = username.toLowerCase();
 
     if (user.roomSummary) {
-      await makeHandleSocketLeavingRoom(socket)(user.roomSummary.id);
+      await makeHandleSocketLeavingRoom(socket)({
+        roomId: user.roomSummary.id,
+      });
     }
 
     connectedUsersSet.delete(loweredUsername);
@@ -315,7 +325,7 @@ ioServer.on("connection", socket => {
     usernameToUserData.delete(user.username);
     socketIdToSocket.delete(socket.id);
 
-    socket.broadcast.emit("users/refresh", createUsersDataPayload());
+    socket.broadcast.emit("users/refresh", { users: createUsersDataPayload() });
 
     console.log(
       LOG_MESSAGES.SOCKET_DISCONNECT(socket.id, user.username, reason),

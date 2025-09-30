@@ -3,12 +3,12 @@ import { type UserData } from "@shared/types.ts";
 import ContentHeader from "./content-header.tsx";
 
 type Props = {
-  handleTabContentOpen: () => void;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
   connectedUsersData: UserData[];
 };
 
 const UsersContent = (props: Props) => {
-  const { handleTabContentOpen, connectedUsersData } = props;
+  const { setIsTabContentOpen, connectedUsersData } = props;
 
   const renderUsers = () => {
     return connectedUsersData.map(user => (
@@ -22,7 +22,7 @@ const UsersContent = (props: Props) => {
     <div className="flex flex-col">
       <ContentHeader
         title="Connected users"
-        handleTabContentOpen={handleTabContentOpen}
+        setIsTabContentOpen={setIsTabContentOpen}
       />
 
       <ol className="p-4">{renderUsers()}</ol>

@@ -2,12 +2,12 @@ import { Button } from "@client/components/ui/button.tsx";
 import { XIcon } from "lucide-react";
 
 type Props = {
-  handleTabContentOpen: () => void;
+  setIsTabContentOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
 };
 
 const ContentHeader = (props: Props) => {
-  const { handleTabContentOpen, title } = props;
+  const { setIsTabContentOpen, title } = props;
 
   return (
     <div className="flex items-center justify-between overflow-hidden text-nowrap border-b-2 px-4 py-1">
@@ -16,7 +16,7 @@ const ContentHeader = (props: Props) => {
       <Button
         size="icon"
         variant="ghost"
-        onClick={handleTabContentOpen}
+        onClick={() => setIsTabContentOpen(c => !c)}
       >
         <XIcon className="icon" />
       </Button>
