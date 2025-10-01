@@ -171,7 +171,7 @@ const ChatroomPage = () => {
           >
             <div
               className={cn(
-                "size-full bg-red-900 transition-margin",
+                "size-full transition-margin",
                 isTabContentOpen ? "mr-80" : "mr-0",
               )}
             >
