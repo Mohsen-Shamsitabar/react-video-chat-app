@@ -21,6 +21,7 @@ export type Message = {
   from: "server" | (UserData["username"] & {});
   to: RoomId;
   content: string;
+  time?: string;
 };
 
 export type Room = NewRoomFormSchema & {

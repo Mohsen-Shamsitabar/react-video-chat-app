@@ -1,5 +1,6 @@
 import { Button } from "@client/components/ui/button.tsx";
 import { CHATROOM_TAB_NAMES } from "@client/lib/constants.ts";
+import { cn } from "@client/lib/utils.ts";
 import { useSocket } from "@client/providers/socket-provider.tsx";
 import type { ChatroomTabNames } from "@client/types.ts";
 import {
@@ -47,7 +48,7 @@ const RoomControls = (props: Props) => {
     if (notifCounter <= 0) return null;
 
     return (
-      <span className="fixed bottom-0 ml-8 font-light text-xs size-5 rounded-full bg-destructive">
+      <span className="absolute top-[-0.5rem] right-[-0.5rem] font-light text-xs size-4 rounded-full px-0.5 bg-destructive flex items-center justify-center">
         {notifCounter}
       </span>
     );
@@ -89,7 +90,10 @@ const RoomControls = (props: Props) => {
       <Button
         onClick={() => handleTabClick(CHATROOM_TAB_NAMES.CHAT)}
         size="icon"
-        className="relative"
+        className={cn(
+          "relative",
+          notifCounter > 0 ? "border-2 border-destructive" : undefined,
+        )}
       >
         <MessageCircleMoreIcon className="icon" />
 
