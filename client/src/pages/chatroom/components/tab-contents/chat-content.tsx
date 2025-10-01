@@ -84,12 +84,14 @@ const ChatContentMessages = () => {
       setMessages(fetchedMessages);
     })();
 
-    socket.on("room/message/send", ({ message }) =>
-      setMessages(c => [...c, message]),
-    );
+    const messageHandler = ({ message }: { message: Message }) => {
+      setMessages(c => [...c, message]);
+    };
+
+    socket.on("room/message/send", messageHandler);
 
     return () => {
-      socket.off("room/message/send");
+      socket.off("room/message/send", messageHandler);
     };
   }, []);
 
