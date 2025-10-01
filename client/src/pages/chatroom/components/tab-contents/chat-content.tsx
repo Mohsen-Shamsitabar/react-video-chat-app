@@ -7,6 +7,7 @@ import { useSocket } from "@client/providers/socket-provider.tsx";
 import { type Message } from "@shared/types.ts";
 import { generateMessageId } from "@shared/utils.ts";
 import { SendIcon } from "lucide-react";
+import moment from "moment";
 import * as React from "react";
 import ContentHeader from "./content-header.tsx";
 
@@ -30,6 +31,12 @@ const MessageContainer = (props: MessageContainerProps) => {
   const { username: activeUsername } = useActiveUser();
 
   const isSameAuthor = React.useMemo(() => activeUsername === message.from, []);
+
+  const renderTime = () => {
+    if (!message.time) return null;
+
+    return <span className="text-xs font-light text-end">{message.time}</span>;
+  };
 
   return (
     <div
@@ -56,6 +63,8 @@ const MessageContainer = (props: MessageContainerProps) => {
         </span>
 
         <p className="text-base">{message.content}</p>
+
+        {renderTime()}
       </div>
     </div>
   );
@@ -84,12 +93,14 @@ const ChatContentMessages = () => {
       setMessages(fetchedMessages);
     })();
 
-    socket.on("room/message/send", ({ message }) =>
-      setMessages(c => [...c, message]),
-    );
+    const messageHandler = ({ message }: { message: Message }) => {
+      setMessages(c => [...c, message]);
+    };
+
+    socket.on("room/message/send", messageHandler);
 
     return () => {
-      socket.off("room/message/send");
+      socket.off("room/message/send", messageHandler);
     };
   }, []);
 
@@ -159,6 +170,7 @@ const ChatContentInput = () => {
       from: activeUsername,
       to: room.id,
       content: filteredText,
+      time: moment().format("h:mm"),
     };
 
     socket.emit("message/send", { message });
