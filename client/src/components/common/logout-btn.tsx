@@ -1,10 +1,13 @@
+import { useActiveUser } from "@client/providers/active-user-provider.tsx";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button.tsx";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip.tsx";
 
 const LogOutButton = () => {
+  const { setUsername } = useActiveUser();
+
   const handleLogOut = () => {
-    return;
+    setUsername(null);
   };
 
   return (
