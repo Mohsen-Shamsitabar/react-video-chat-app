@@ -8,6 +8,8 @@ const LogOutButton = () => {
 
   const handleLogOut = () => {
     setUsername(null);
+    // Not optimal
+    window.location.reload();
   };
 
   return (
