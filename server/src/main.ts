@@ -259,6 +259,8 @@ ioServer.on("connection", socket => {
 
     if (!room) return;
 
+    if (room.connectedUsers.length >= room.size) return;
+
     await socket.join(roomId);
 
     userData.roomSummary = {
