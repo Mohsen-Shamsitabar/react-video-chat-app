@@ -31,6 +31,7 @@ const ChatroomPage = () => {
   // How to know if room exists?
   const { roomId } = useParams<ChatroomParams>();
 
+  // null->not found
   const [room, setRoom] = React.useState<Room | null | undefined>(undefined);
   const [isMicOn, setIsMicOn] = React.useState(true);
   const [isVideoOn, setIsVideoOn] = React.useState(true);
@@ -39,9 +40,10 @@ const ChatroomPage = () => {
     CHATROOM_TAB_NAMES.DETAILS,
   );
 
-  const [mediaStream, setMediaStream] = React.useState<null | MediaStream>(
-    null,
-  );
+  // null->user denied access.
+  const [mediaStream, setMediaStream] = React.useState<
+    null | MediaStream | undefined
+  >(undefined);
 
   const [connectedUsersData, setConnectedUsersData] = React.useState<
     UserData[]
@@ -55,22 +57,30 @@ const ChatroomPage = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (!mediaStream) {
+    if (typeof mediaStream === "undefined") {
       void (async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
 
-        setMediaStream(stream);
+          setMediaStream(stream);
+        } catch (error) {
+          console.error(error);
+
+          setMediaStream(null);
+        }
       })();
 
       return;
     }
 
+    if (!mediaStream) return;
+
     return () => {
       mediaStream.getTracks().forEach(track => track.stop());
-      setMediaStream(null);
+      setMediaStream(undefined);
     };
   }, [mediaStream]);
 
@@ -113,8 +123,20 @@ const ChatroomPage = () => {
   }, []);
 
   if (!socket) return null;
-  if (typeof room === "undefined" || !mediaStream) return <LoadingPage />;
+
+  if (typeof room === "undefined" || typeof mediaStream === "undefined") {
+    return <LoadingPage />;
+  }
+
   if (!room) return <NotFoundPage />;
+
+  if (!mediaStream) {
+    return (
+      <h2 className="text-center text-xl font-bold mt-16">
+        Please grant media stream access to join the call!
+      </h2>
+    );
+  }
 
   const handleMicClick = () => {
     setIsMicOn(prev => {
